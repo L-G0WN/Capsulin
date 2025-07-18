@@ -1,96 +1,50 @@
 ---
-import Layout from '@/layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-
-const sintomas = await getCollection('sintomas');
-const medicamentos = await getCollection('medicamentos');
-
-const sintomasMap = Object.fromEntries(
-  sintomas.map((s: { data: { title: string; medicamentos: string[]; [key: string]: any } }) => [
-    s.data.title.toLowerCase(),
-    {
-      ...s.data,
-      medicamentos: s.data.medicamentos.map((nombre: string) => {
-        const med = medicamentos.find((m: { data: { title: string; dosis: string; efectos?: string } }) => m.data.title.toLowerCase() === nombre.toLowerCase());
-        return med
-          ? { nombre: med.data.title, dosis: med.data.dosis, efectos: med.data.efectos }
-          : { nombre, dosis: '', efectos: '' };
-      }),
-    },
-  ])
-);
+import Layout from "@/layouts/Layout.astro";
+import QuickReplies from '@/components/QuickReplies.astro';
 ---
 
 <Layout title="Capsulin" descripcion="Asistente de Farmacia de Drotaca C.A.">
+    <!-- Contenedor principal -->
     <div class="container mx-auto max-w-4xl p-4">
-        <!-- Header con logo -->
-        <header class="bg-white shadow-md rounded-lg p-4 mb-6 flex items-center">
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                <img src="https://placehold.co/64" alt="Ícono de farmacia: pastillas azules y blancas con cruz verde" class="w-10 h-10">
-            </div>
-            <div>
-                <h1 class="text-2xl font-bold text-blue-800">Capsulin</h1>
-                <p class="text-gray-600">Tu asistente virtual de farmacia</p>
-            </div>
-        </header>
-        
-        <!-- Chat container -->
+        <!-- Tarjeta de chat -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <!-- Chat header -->
+            <!-- Encabezado -->
             <div class="bg-blue-600 text-white p-4">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                        <img src="https://placehold.co/40" alt="Avatar del bot: cara robótica amigable con expresión sonriente" class="w-6 h-6">
+                    <div
+                        class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3"
+                    >
+                        <img
+                            src="https://placehold.co/40"
+                            alt="Avatar del asistente de farmacia"
+                            width="24"
+                            height="24"
+                        />
                     </div>
                     <div>
-                        <h2 class="font-bold">Asistente Farmacéutico</h2>
-                        <p class="text-xs opacity-80">En línea</p>
+                        <h2 class="font-bold text-3xl">Capsulin</h2>
+                        <p class="text-xs opacity-80">Asistente Farmacéutico</p>
                     </div>
                 </div>
             </div>
-            
-            <!-- Chat messages -->
+
+            <!-- Área de mensajes -->
             <div id="chat-container" class="h-96 p-4 overflow-y-auto space-y-4">
-                <!-- Mensaje de bienvenida -->
-                <div class="chat-message">
-                    <div class="flex items-start">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                            <img src="https://placehold.co/32" alt="Icono pequeño del bot" class="w-5 h-5">
-                        </div>
-                        <div class="bg-blue-100 rounded-lg p-3 max-w-xs lg:max-w-md">
-                            <p class="text-gray-800">¡Hola! Soy tu asistente de farmacia virtual. Puedo ayudarte con:</p>
-                            <ul class="list-disc pl-5 mt-1 text-sm text-gray-700">
-                                <li>Información sobre medicamentos</li>
-                                <li>Síntomas comunes y recomendaciones</li>
-                                <li>Disponibilidad en tienda</li>
-                                <li>Recordatorios de medicación</li>
-                            </ul>
-                            <p class="mt-2 text-gray-800">¿En qué puedo ayudarte hoy?</p>
-                        </div>
-                    </div>
-                </div>
             </div>
-            
-            <!-- Input area -->
+
+            <!-- Barra de entrada -->
             <div class="border-t border-gray-200 p-4 bg-gray-50">
-                <div id="quick-replies" class="flex flex-wrap gap-2 mb-3">
-                    <!-- Botones rápidos -->
-                    <button onclick="sendMessage(this.textContent)" class="text-xs bg-white border border-blue-300 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-50 transition">Dolor de cabeza</button>
-                    <button onclick="sendMessage(this.textContent)" class="text-xs bg-white border border-blue-300 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-50 transition">Gripe</button>
-                    <button onclick="sendMessage(this.textContent)" class="text-xs bg-white border border-blue-300 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-50 transition">Alergias</button>
-                    <button onclick="sendMessage(this.textContent)" class="text-xs bg-white border border-blue-300 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-50 transition">Analgésicos</button>
-                </div>
-                
+                <QuickReplies/>
+
                 <div class="flex">
-                    <input 
-                        id="user-input" 
-                        type="text" 
-                        placeholder="Escribe tu consulta..." 
+                    <input
+                        id="user-input"
+                        type="text"
+                        placeholder="Escribe tu consulta..."
                         class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onkeypress="handleKeyPress(event)"
-                    >
-                    <button 
-                        onclick="sendMessage(document.getElementById('user-input').value)" 
+                    />
+                    <button
+                        id="submit-button"
                         class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition"
                     >
                         Enviar
@@ -98,132 +52,208 @@ const sintomasMap = Object.fromEntries(
                 </div>
             </div>
         </div>
-        
-        <!-- Info footer -->
+
+        <!-- Aviso médico -->
         <div class="mt-4 text-center text-xs text-gray-500">
-            <p>Este asistente no sustituye el consejo médico profesional. Consulta siempre con un farmacéutico.</p>
+            <p>Este asistente no sustituye el consejo médico profesional.</p>
         </div>
     </div>
 
-    <script>
-        window.sintomasDB = JSON.parse(`${JSON.stringify(sintomasMap)}`);
-    </script>
+    <script type="module">
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatContainer = document.getElementById("chat-container");
 
-    <script>
-        function addMessage(sender, message, isBot = false) {
-            const chatContainer = document.getElementById('chat-container');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'chat-message';
-            
-            if (isBot) {
-                messageDiv.innerHTML = `
+            // Función para mostrar mensajes
+            function addChatMessage(message, isBot = false) {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `chat-message ${isBot ? "" : "flex justify-end"}`;
+
+                messageDiv.innerHTML = isBot
+                    ? `
                     <div class="flex items-start">
                         <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                            <img src="https://placehold.co/32" alt="Icono pequeño del bot" class="w-5 h-5">
+                            <img src="https://placehold.co/32" alt="Bot" width="20" height="20">
                         </div>
                         <div class="bg-blue-100 rounded-lg p-3 max-w-xs lg:max-w-md">
-                            <p class="text-gray-800">${message}</p>
+                            ${message}
                         </div>
                     </div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="flex items-start justify-end">
+                `
+                    : `
+                    <div class="flex items-end">
                         <div class="bg-gray-200 rounded-lg p-3 max-w-xs lg:max-w-md">
-                            <p class="text-gray-800">${message}</p>
+                            <p class="text-gray-800"><strong>Tú:</strong> ${message}</p>
                         </div>
                         <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center ml-2">
-                            <img src="https://placehold.co/32" alt="Icono de usuario" class="w-5 h-5">
+                            <img src="https://placehold.co/32" alt="Usuario" width="20" height="20">
                         </div>
                     </div>
                 `;
+
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-            
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
 
-        function showTypingIndicator() {
-            const chatContainer = document.getElementById('chat-container');
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'chat-message typing-indicator';
-            typingDiv.id = 'typing-indicator';
-            typingDiv.innerHTML = `
-                <div class="flex items-start">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                        <img src="https://placehold.co/32" alt="Icono pequeño del bot" class="w-5 h-5">
+            // Función para mostrar "escribiendo..."
+            function showTyping() {
+                const typingDiv = document.createElement("div");
+                typingDiv.id = "typing-indicator";
+                typingDiv.className = "chat-message";
+                typingDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+                            <img src="https://placehold.co/32" alt="Bot" width="20" height="20">
+                        </div>
+                        <div class="bg-blue-100 rounded-lg p-3 w-30">
+                            <p class="text-gray-800">Escribiendo...</p>
+                        </div>
                     </div>
-                    <div class="bg-blue-100 rounded-lg p-3 w-16">
-                        <p class="text-gray-800">Escribiendo</p>
-                    </div>
-                </div>
-            `;
-            chatContainer.appendChild(typingDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function hideTypingIndicator() {
-            const typing = document.getElementById('typing-indicator');
-            if (typing) typing.remove();
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMessage(document.getElementById('user-input').value);
+                `;
+                chatContainer.appendChild(typingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-        }
 
-        const sintomasDB = window.sintomasDB;
+            // Función para buscar información
+            async function searchInformation(query) {
+                showTyping();
 
-        function processUserInput(input) {
-            const normalizedInput = input.toLowerCase().trim();
-            document.getElementById('user-input').value = '';
-            addMessage('user', input);
-            showTypingIndicator();
+                try {
+                    const response = await fetch(
+                        `/api/search?query=${encodeURIComponent(query)}`,
+                    );
 
-            setTimeout(() => {
-                hideTypingIndicator();
+                    // Verificar si la respuesta es exitosa
+                    if (!response.ok) {
+                        throw new Error(
+                            `Error ${response.status}: ${response.statusText}`,
+                        );
+                    }
 
-                let found = false;
-                for (const [key, data] of Object.entries(sintomasDB)) {
-                    if (normalizedInput.includes(key)) {
-                        found = true;
-                        let response = `Para <strong>${key}</strong>:<br>`;
-                        response += `<p class="my-2">${data.descripcion}. ${data.recomendacion}.</p>`;
-                        response += `<div class="mt-3">
-                            <p class="font-semibold mb-1">Medicamentos recomendados:</p>
-                            <ul class="bg-blue-50 p-2 rounded-lg">`;
-                        data.medicamentos.forEach(med => {
-                            response += `<li class="py-1"><strong>${med.nombre}</strong>: ${med.dosis}`;
-                            if (med.efectos) response += ` (${med.efectos})`;
-                            response += `</li>`;
-                        });
-                        response += `</ul></div>`;
-                        response += `<p class="mt-3 text-sm text-red-600">${data.emergencia}</p>`;
-                        response += `<p class="mt-2">¿En qué más puedo ayudarte?</p>`;
-                        addMessage('bot', response, true);
+                    const results = await response.json();
+
+                    // Eliminar indicador de "escribiendo"
+                    document.getElementById("typing-indicator")?.remove();
+
+                    if (Object.keys(results).length === 0) {
+                        const defaultResponses = [
+                            "No estoy seguro de entender tu consulta. Por favor, sé más específico sobre tus síntomas o el medicamento que buscas.",
+                            "Puedo ayudarte con información sobre medicamentos para síntomas comunes como dolor de cabeza, gripe o alergias. ¿Cuál es tu necesidad?",
+                            "Recuerda que siempre puedes consultar con nuestro personal en la farmacia para recomendaciones más personalizadas.",
+                            "Si tienes síntomas como fiebre, tos o congestión, puedo ofrecerte opciones de medicamentos. ¿Te gustaría saber más?",
+                            "Es importante que describas tus síntomas con más detalle para que pueda ayudarte mejor. ¿Qué te preocupa?",
+                            "Si estás buscando un medicamento específico, por favor indícame su nombre o el tipo de síntoma que deseas tratar.",
+                            "Recuerda que algunos síntomas pueden requerir atención médica. Si es urgente, considera visitar a un profesional de salud.",
+                            "¿Tienes alguna alergia conocida? Esto es importante para recomendarte medicamentos seguros.",
+                            "Puedo ofrecerte información sobre remedios naturales o alternativas si prefieres evitar medicamentos. ¿Te interesa?",
+                            "Si necesitas ayuda con un medicamento que ya estás tomando, por favor indícame su nombre y la razón de tu consulta.",
+                            "¿Te gustaría saber más sobre los efectos secundarios de algún medicamento en particular?",
+                            "Si estás buscando consejos sobre cómo aliviar síntomas de forma natural, puedo ayudarte con eso también.",
+                            "Por favor, indícame si tienes alguna condición médica preexistente que deba tener en cuenta al recomendarte medicamentos.",
+                            "Si tienes dudas sobre la dosificación de un medicamento, puedo proporcionarte información general. ¿Cuál es el medicamento?",
+                            "Recuerda que la automedicación puede ser peligrosa. Siempre es mejor consultar a un profesional de salud.",
+                            "¿Te gustaría saber más sobre los medicamentos de venta libre para el tratamiento de síntomas comunes?",
+                            "Si tienes síntomas persistentes, es recomendable que consultes a un médico. ¿Te gustaría que te ayude a encontrar uno?",
+                            "¿Estás buscando información sobre medicamentos para niños o adultos? La dosificación puede variar.",
+                            "Si necesitas ayuda con un medicamento recetado, por favor proporciona el nombre y la razón de su uso.",
+                            "¿Tienes alguna preferencia por medicamentos genéricos o de marca? Esto puede influir en las recomendaciones.",
+                            "Si estás interesado en tratamientos alternativos o complementarios, puedo ofrecerte información sobre eso también."
+                        ];
+                        const randomResponse = defaultResponses[Math.floor(Math.random() * defaultResponses.length,)];
+                        addChatMessage(randomResponse, true);
                         return;
                     }
-                }
-                if (!found) {
-                    const defaultResponses = [
-                        "No estoy seguro de entender tu consulta. Por favor, sé más específico sobre tus síntomas o el medicamento que buscas.",
-                        "Puedo ayudarte con información sobre medicamentos para síntomas comunes como dolor de cabeza, gripe o alergias. ¿Cuál es tu necesidad?",
-                        "Recuerda que siempre puedes consultar con nuestro personal en la farmacia para recomendaciones más personalizadas."
-                    ];
-                    const randomResponse = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-                    addMessage('bot', randomResponse, true);
-                }
-            }, 1000 + Math.random() * 2000);
-        }
 
-        function sendMessage(input) {
-            if (!input || input.trim() === '') return;
-            processUserInput(input);
-        }
+                    // Construir respuesta
+                    let responseHTML = "";
+                    for (const [sintoma, info] of Object.entries(results)) {
+                        responseHTML += `
+                        <div class="result-item bg-gray-50 p-3 rounded-md">
+                            <p class="text-gray-800">
+                            <span class="font-medium">${sintoma}:</span> ${info.descripcion}
+                            ${info.recomendacion ? `<span>${info.recomendacion}</span>` : ""}
+                            ${
+                                info.medicamentos.length > 0
+                                    ? info.medicamentos
+                                          .map(
+                                              (med) =>
+                                                  `<span class="text-blue-700 font-semibold">${med.nombre} (${med.dosis})</span><span>${med.efectos ? `. ${med.efectos}` : ""}</span>`,
+                                          )
+                                          .join("")
+                                    : ""
+                            }
+                            <span class="text-sm text-red-600">Emergencia: ${info.emergencia}</span>
+                            </p>
+                        </div>
+                        `;
+                    }
 
-        setTimeout(() => {
-            addMessage('bot', '¿Cómo estás hoy? Cuéntame qué síntomas tienes o qué medicamento necesitas información.', true);
-        }, 1500);
+                    addChatMessage(responseHTML, true);
+                } catch (error) {
+                    document.getElementById("typing-indicator")?.remove();
+                    addChatMessage(
+                        `<p>${error.message}. Por favor intenta nuevamente.</p>`,
+                        true,
+                    );
+                }
+            }
+
+            // Manejadores de eventos
+            document
+                .getElementById("submit-button")
+                .addEventListener("click", () => {
+                    const input = document.getElementById("user-input");
+                    const query = input.value.trim();
+                    if (query) {
+                        addChatMessage(query);
+                        searchInformation(query);
+                        input.value = "";
+                    }
+                });
+
+            document
+                .getElementById("user-input")
+                .addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") {
+                        const input = document.getElementById("user-input");
+                        const query = input.value.trim();
+                        if (query) {
+                            addChatMessage(query);
+                            searchInformation(query);
+                            input.value = "";
+                        }
+                    }
+                });
+
+            // Manejo de clicks para los botones dinámicos
+            const quickButtons = Array.from(document.querySelectorAll('#quick-replies button'));
+            
+            quickButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                const itemType = button.dataset.type;
+                const itemId = button.dataset.id;
+                const itemName = button.textContent;
+
+                // Llama a tus funciones para manejar el click
+                addChatMessage(itemName);
+                searchInformation(itemName);
+                });
+            });
+
+            // Mensaje inicial del bot
+            setTimeout(() => {
+                addChatMessage(
+                    `
+                    <p>¡Hola! Soy Capsulin, tu asistente farmacéutico.</p>
+                    <p class="mt-2">Puedes preguntarme cosas como:</p>
+                    <ul class="list-disc pl-5 mt-1">
+                        <li>¿Qué sirve para alergias?</li>
+                        <li>Tengo gripe, ¿qué me recomiendas?</li>
+                        <li>Dolor de cabeza</li>
+                    </ul>
+                `,
+                    true,
+                );
+            }, 1000);
+        });
     </script>
 </Layout>
