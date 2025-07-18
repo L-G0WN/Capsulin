@@ -12,7 +12,6 @@ export const GET: APIRoute = async ({ request, url }) => {
     const db = await getDb();
     
     try {
-        console.log(cleanedQuery); // Muestra la consulta limpia
         const results: any[] = await db.all(
             `SELECT s.titulo AS sintoma, s.descripcion, s.recomendacion, s.emergencia,
                     m.nombre AS medicamento, m.dosis, m.efectos
