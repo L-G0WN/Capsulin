@@ -55,3 +55,53 @@ export const POST: APIRoute = async ({ request }) => {
         return new Response(JSON.stringify({ ok: false, error: "Error al insertar síntoma." }), { status: 400 });
     }
 };
+
+export const DELETE: APIRoute = async ({ request }) => {
+    const db = await getDb();
+    try {
+        const url = new URL(request.url);
+        const id = url.searchParams.get("id");
+
+        if (!id) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "ID de síntoma requerido." }),
+                { status: 400 }
+            );
+        }
+
+        const enUso = await db.get(
+            "SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? LIMIT 1",
+            id
+        );
+        if (enUso) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "No se puede eliminar el síntoma porque está asociado a una relación. Elimine primero las relaciones correspondientes." }),
+                { status: 409 }
+            );
+        }
+
+        const existe = await db.get("SELECT id FROM sintomas WHERE id = ?", id);
+        if (!existe) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "No existe un síntoma con ese ID." }),
+                { status: 404 }
+            );
+        }
+
+        await db.run("DELETE FROM sintomas WHERE id = ?", id);
+        await db.close();
+        return new Response(
+            JSON.stringify({ ok: true, message: "Síntoma eliminado correctamente." }),
+            { status: 200 }
+        );
+    } catch (e) {
+        await db.close();
+        return new Response(
+            JSON.stringify({ ok: false, error: "Error al eliminar el síntoma." }),
+            { status: 500 }
+        );
+    }
+};

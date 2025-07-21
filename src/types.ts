@@ -5,7 +5,6 @@ export interface Medicamento {
     contraindicaciones?: string;
     duracion?: string;
     presentacion?: string;
-    laboratorio?: string;
     sintomas?: string[];
 }
 
@@ -18,7 +17,6 @@ export interface MedicamentoRelacion {
     contraindicaciones?: string;
     duracion?: string;
     presentacion?: string;
-    laboratorio?: string;
 }
 
 export interface Sintoma {

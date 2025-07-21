@@ -1,147 +1,184 @@
 ---
+// ...existing imports...
 import Layout from "@/layouts/Layout.astro";
 ---
 
 <Layout title="Panel de Base de Datos" descripcion="Administra medicamentos, síntomas y relaciones">
 
-    <!-- Botón ir a la página principal -->
-    <div class="w-full flex justify-center pt-4">
+    <!-- Botones -->
+    <div class="w-full flex flex-wrap justify-center gap-2 pt-4 mb-6">
         <a
             href="/"
             class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm"
         >
-            A la página principal
+            Ir a la página principal
+        </a>
+        <a
+            href="/admin/list"
+            class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm"
+        >
+            Ir a la lista de medicamentos y síntomas
         </a>
     </div>
 
-    <main class="container mx-auto max-w-3xl px-4">
-        <h1 class="text-2xl font-bold mb-6 text-blue-700">
-            Panel de Base de Datos
-        </h1>
+    <main class="container mx-auto max-w-4xl px-2">
+        <h1 class="text-3xl font-extrabold mb-10 text-blue-800 text-center tracking-tight drop-shadow">Panel de Base de Datos</h1>
         <div class="grid md:grid-cols-2 gap-8">
+            <!-- Formulario de Presentación -->
+            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M12 8v8"/></svg>
+                    Agregar Presentación
+                </h2>
+                <form id="form-presentacion" class="space-y-4">
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Ej: Tabletas"
+                        required
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    />
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
+                    >Agregar Presentación</button>
+                </form>
+                <div id="msg-presentacion" class="mt-3 text-sm text-center"></div>
+            </section>
+
+            <!-- Formulario de Dosis -->
+            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M12 8v8"/></svg>
+                    Agregar Dosis
+                </h2>
+                <form id="form-dosis" class="space-y-4">
+                    <input
+                        type="text"
+                        name="cantidad"
+                        placeholder="Ej: 500 mg"
+                        required
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    />
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
+                    >Agregar Dosis</button>
+                </form>
+                <div id="msg-dosis" class="mt-3 text-sm text-center"></div>
+            </section>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mt-10">
             <!-- Formulario de Medicamento -->
-            <section
-                class="bg-white rounded-xl shadow p-6 border border-gray-100"
-            >
-                <h2 class="text-lg font-semibold mb-4 text-blue-600">
+            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Agregar Medicamento
                 </h2>
-                <form id="form-medicamento" class="space-y-3">
+                <form id="form-medicamento" class="space-y-4">
                     <input
                         type="text"
                         name="nombre"
                         placeholder="Nombre"
                         required
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <input
                         type="text"
                         name="efectos"
                         placeholder="Efectos"
                         required
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <select
-                        name="presentacion"
-                        class="w-full border rounded px-3 py-2"
+                        name="presentacion_id"
+                        id="presentacion-select"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         required
                     >
-                        <option value="" disabled
-                            >Selecciona la presentación</option
-                        >
-                        <option value="Tabletas">Tabletas</option>
-                        <option value="Cápsulas">Cápsulas</option>
-                        <option value="Jarabe">Jarabe</option>
-                        <option value="Ampollas">Ampollas</option>
-                        <option value="Gotas">Gotas</option>
-                        <option value="Suspensión">Suspensión</option>
-                        <option value="Crema">Crema</option>
-                        <option value="Spray">Spray</option>
+                        <option value="" disabled selected>Selecciona la presentación</option>
                     </select>
                     <input
                         type="text"
                         name="contraindicaciones"
                         placeholder="Contraindicaciones"
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <button
                         type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        >Agregar Medicamento</button
-                    >
+                        class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
+                    >Agregar Medicamento</button>
                 </form>
-                <div id="msg-medicamento" class="mt-2 text-sm"></div>
+                <div id="msg-medicamento" class="mt-3 text-sm text-center"></div>
             </section>
 
             <!-- Formulario de Síntoma -->
-            <section
-                class="bg-white rounded-xl shadow p-6 border border-gray-100"
-            >
-                <h2 class="text-lg font-semibold mb-4 text-blue-600">
+            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Agregar Síntoma
                 </h2>
-                <form id="form-sintoma" class="space-y-3">
+                <form id="form-sintoma" class="space-y-4">
                     <input
                         type="text"
                         name="titulo"
                         placeholder="Título"
                         required
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <input
                         type="text"
                         name="descripcion"
                         placeholder="Descripción"
                         required
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <input
                         type="text"
                         name="recomendacion"
                         placeholder="Recomendación"
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <input
                         type="text"
                         name="emergencia"
                         placeholder="Emergencia"
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <input
                         type="text"
                         name="categoria"
                         placeholder="Categoría"
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <input
                         type="text"
                         name="frecuencia"
                         placeholder="Frecuencia"
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <button
                         type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        >Agregar Síntoma</button
-                    >
+                        class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
+                    >Agregar Síntoma</button>
                 </form>
-                <div id="msg-sintoma" class="mt-2 text-sm"></div>
+                <div id="msg-sintoma" class="mt-3 text-sm text-center"></div>
             </section>
         </div>
 
         <!-- Formulario de Relación -->
-        <section
-            class="bg-white rounded-xl shadow p-6 border border-gray-100 mt-10"
-        >
-            <h2 class="text-lg font-semibold mb-4 text-blue-600">
+        <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100 mt-12">
+            <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="8" cy="7" r="4"></circle></svg>
                 Relacionar Síntoma y Medicamento
             </h2>
-            <form id="form-relacion" class="space-y-3">
+            <form id="form-relacion" class="space-y-4">
                 <select
                     id="sintoma-select"
                     name="sintoma_id"
                     required
-                    class="w-full border rounded px-3 py-2"
+                    class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                 >
                     <option value="" disabled>Cargando síntomas...</option>
                 </select>
@@ -149,36 +186,28 @@ import Layout from "@/layouts/Layout.astro";
                     id="medicamento-select"
                     name="medicamento_id"
                     required
-                    class="w-full border rounded px-3 py-2"
+                    class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                 >
                     <option value="" disabled>Cargando medicamentos...</option>
                 </select>
                 <select
-                    name="dosis"
+                    id="dosis-select"
+                    name="dosis_id"
                     required
-                    class="w-full border rounded px-3 py-2"
+                    class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                 >
                     <option value="" disabled>Selecciona la dosis</option>
-                    <option value="50 mg">50 mg</option>
-                    <option value="100 mg">100 mg</option>
-                    <option value="200 mg">200 mg</option>
-                    <option value="400 mg">400 mg</option>
-                    <option value="500 mg">500 mg</option>
-                    <option value="800 mg">800 mg</option>
-                    <option value="1 g">1 g</option>
-                    <option value="5 mL">5 mL</option>
-                    <option value="10 mL">10 mL</option>
                 </select>
                 <input
                     type="text"
                     name="duracion"
                     placeholder="Duración"
-                    class="w-full border rounded px-3 py-2"
+                    class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                 />
                 <select
                     name="intensidad"
                     required
-                    class="w-full border rounded px-3 py-2"
+                    class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                 >
                     <option value="" disabled>Selecciona la intensidad</option>
                     <option value="Normal">Normal</option>
@@ -187,11 +216,10 @@ import Layout from "@/layouts/Layout.astro";
                 </select>
                 <button
                     type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >Crear Relación</button
-                >
+                    class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
+                >Crear Relación</button>
             </form>
-            <div id="msg-relacion" class="mt-2 text-sm"></div>
+            <div id="msg-relacion" class="mt-3 text-sm text-center"></div>
         </section>
     </main>
 
@@ -215,8 +243,64 @@ import Layout from "@/layouts/Layout.astro";
                     '<option value="" disabled>Error al cargar</option>';
             }
         }
-        loadSelect("/api/sym-list", "sintoma-select", "titulo");
-        loadSelect("/api/med-list", "medicamento-select", "nombre");
+        loadSelect("/api/list/sintomas?noRelacionados=true", "sintoma-select", "titulo");
+        loadSelect("/api/list/medicamentos", "medicamento-select", "nombre");
+        loadSelect("/api/list/presentaciones", "presentacion-select", "nombre");
+        loadSelect("/api/list/dosis", "dosis-select", "cantidad");
+
+        // Presentación
+        document
+            .getElementById("form-presentacion")
+            .addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form));
+                const res = await fetch("/api/v1/presentaciones", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                let msg = "Error al agregar presentación.";
+                try {
+                    const json = await res.json();
+                    msg =
+                        json?.error ||
+                        json?.message ||
+                        (res.ok ? "Presentación agregada." : msg);
+                } catch {}
+                document.getElementById("msg-presentacion").textContent = msg;
+                if (res.ok) {
+                    form.reset();
+                    loadSelect("/api/list/presentaciones", "presentacion-select", "nombre");
+                }
+            });
+
+        // Dosis
+        document
+            .getElementById("form-dosis")
+            .addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form));
+                const res = await fetch("/api/v1/dosis", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                let msg = "Error al agregar dosis.";
+                try {
+                    const json = await res.json();
+                    msg =
+                        json?.error ||
+                        json?.message ||
+                        (res.ok ? "Dosis agregada." : msg);
+                } catch {}
+                document.getElementById("msg-dosis").textContent = msg;
+                if (res.ok) {
+                    form.reset();
+                    loadSelect("/api/list/dosis", "dosis-select", "cantidad");
+                }
+            });
 
         // Medicamento
         document
@@ -225,7 +309,7 @@ import Layout from "@/layouts/Layout.astro";
                 e.preventDefault();
                 const form = e.target;
                 const data = Object.fromEntries(new FormData(form));
-                const res = await fetch("/api/medicamentos", {
+                const res = await fetch("/api/v1/medicamentos", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
@@ -249,7 +333,7 @@ import Layout from "@/layouts/Layout.astro";
                 e.preventDefault();
                 const form = e.target;
                 const data = Object.fromEntries(new FormData(form));
-                const res = await fetch("/api/sintomas", {
+                const res = await fetch("/api/v1/sintomas", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
@@ -273,7 +357,7 @@ import Layout from "@/layouts/Layout.astro";
                 e.preventDefault();
                 const form = e.target;
                 const data = Object.fromEntries(new FormData(form));
-                const res = await fetch("/api/relacion", {
+                const res = await fetch("/api/v1/relacion", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
