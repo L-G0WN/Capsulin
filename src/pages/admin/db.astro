@@ -1,0 +1,293 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Panel de Base de Datos" descripcion="Administra medicamentos, síntomas y relaciones">
+
+    <!-- Botón ir a la página principal -->
+    <div class="w-full flex justify-center pt-4">
+        <a
+            href="/"
+            class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm"
+        >
+            A la página principal
+        </a>
+    </div>
+
+    <main class="container mx-auto max-w-3xl px-4">
+        <h1 class="text-2xl font-bold mb-6 text-blue-700">
+            Panel de Base de Datos
+        </h1>
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Formulario de Medicamento -->
+            <section
+                class="bg-white rounded-xl shadow p-6 border border-gray-100"
+            >
+                <h2 class="text-lg font-semibold mb-4 text-blue-600">
+                    Agregar Medicamento
+                </h2>
+                <form id="form-medicamento" class="space-y-3">
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Nombre"
+                        required
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        name="efectos"
+                        placeholder="Efectos"
+                        required
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <select
+                        name="presentacion"
+                        class="w-full border rounded px-3 py-2"
+                        required
+                    >
+                        <option value="" disabled
+                            >Selecciona la presentación</option
+                        >
+                        <option value="Tabletas">Tabletas</option>
+                        <option value="Cápsulas">Cápsulas</option>
+                        <option value="Jarabe">Jarabe</option>
+                        <option value="Ampollas">Ampollas</option>
+                        <option value="Gotas">Gotas</option>
+                        <option value="Suspensión">Suspensión</option>
+                        <option value="Crema">Crema</option>
+                        <option value="Spray">Spray</option>
+                    </select>
+                    <input
+                        type="text"
+                        name="contraindicaciones"
+                        placeholder="Contraindicaciones"
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <button
+                        type="submit"
+                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        >Agregar Medicamento</button
+                    >
+                </form>
+                <div id="msg-medicamento" class="mt-2 text-sm"></div>
+            </section>
+
+            <!-- Formulario de Síntoma -->
+            <section
+                class="bg-white rounded-xl shadow p-6 border border-gray-100"
+            >
+                <h2 class="text-lg font-semibold mb-4 text-blue-600">
+                    Agregar Síntoma
+                </h2>
+                <form id="form-sintoma" class="space-y-3">
+                    <input
+                        type="text"
+                        name="titulo"
+                        placeholder="Título"
+                        required
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        name="descripcion"
+                        placeholder="Descripción"
+                        required
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        name="recomendacion"
+                        placeholder="Recomendación"
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        name="emergencia"
+                        placeholder="Emergencia"
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        name="categoria"
+                        placeholder="Categoría"
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <input
+                        type="text"
+                        name="frecuencia"
+                        placeholder="Frecuencia"
+                        class="w-full border rounded px-3 py-2"
+                    />
+                    <button
+                        type="submit"
+                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        >Agregar Síntoma</button
+                    >
+                </form>
+                <div id="msg-sintoma" class="mt-2 text-sm"></div>
+            </section>
+        </div>
+
+        <!-- Formulario de Relación -->
+        <section
+            class="bg-white rounded-xl shadow p-6 border border-gray-100 mt-10"
+        >
+            <h2 class="text-lg font-semibold mb-4 text-blue-600">
+                Relacionar Síntoma y Medicamento
+            </h2>
+            <form id="form-relacion" class="space-y-3">
+                <select
+                    id="sintoma-select"
+                    name="sintoma_id"
+                    required
+                    class="w-full border rounded px-3 py-2"
+                >
+                    <option value="" disabled>Cargando síntomas...</option>
+                </select>
+                <select
+                    id="medicamento-select"
+                    name="medicamento_id"
+                    required
+                    class="w-full border rounded px-3 py-2"
+                >
+                    <option value="" disabled>Cargando medicamentos...</option>
+                </select>
+                <select
+                    name="dosis"
+                    required
+                    class="w-full border rounded px-3 py-2"
+                >
+                    <option value="" disabled>Selecciona la dosis</option>
+                    <option value="50 mg">50 mg</option>
+                    <option value="100 mg">100 mg</option>
+                    <option value="200 mg">200 mg</option>
+                    <option value="400 mg">400 mg</option>
+                    <option value="500 mg">500 mg</option>
+                    <option value="800 mg">800 mg</option>
+                    <option value="1 g">1 g</option>
+                    <option value="5 mL">5 mL</option>
+                    <option value="10 mL">10 mL</option>
+                </select>
+                <input
+                    type="text"
+                    name="duracion"
+                    placeholder="Duración"
+                    class="w-full border rounded px-3 py-2"
+                />
+                <select
+                    name="intensidad"
+                    required
+                    class="w-full border rounded px-3 py-2"
+                >
+                    <option value="" disabled>Selecciona la intensidad</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Medio">Medio</option>
+                    <option value="Muy Fuerte">Muy Fuerte</option>
+                </select>
+                <button
+                    type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >Crear Relación</button
+                >
+            </form>
+            <div id="msg-relacion" class="mt-2 text-sm"></div>
+        </section>
+    </main>
+
+    <script type="module">
+        async function loadSelect(url, selectId, labelKey) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Cargando...</option>';
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                select.innerHTML =
+                    '<option value="" disabled>Selecciona una opción</option>' +
+                    data
+                        .map(
+                            (item) =>
+                                `<option value="${item.id}">${item[labelKey]}</option>`,
+                        )
+                        .join("");
+            } catch {
+                select.innerHTML =
+                    '<option value="" disabled>Error al cargar</option>';
+            }
+        }
+        loadSelect("/api/sym-list", "sintoma-select", "titulo");
+        loadSelect("/api/med-list", "medicamento-select", "nombre");
+
+        // Medicamento
+        document
+            .getElementById("form-medicamento")
+            .addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form));
+                const res = await fetch("/api/medicamentos", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                let msg = "Error al agregar medicamento.";
+                try {
+                    const json = await res.json();
+                    msg =
+                        json?.error ||
+                        json?.message ||
+                        (res.ok ? "Medicamento agregado." : msg);
+                } catch {}
+                document.getElementById("msg-medicamento").textContent = msg;
+                if (res.ok) form.reset();
+            });
+
+        // Síntoma
+        document
+            .getElementById("form-sintoma")
+            .addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form));
+                const res = await fetch("/api/sintomas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                let msg = "Error al agregar síntoma.";
+                try {
+                    const json = await res.json();
+                    msg =
+                        json?.error ||
+                        json?.message ||
+                        (res.ok ? "Síntoma agregado." : msg);
+                } catch {}
+                document.getElementById("msg-sintoma").textContent = msg;
+                if (res.ok) form.reset();
+            });
+
+        // Relación
+        document
+            .getElementById("form-relacion")
+            .addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form));
+                const res = await fetch("/api/relacion", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                let msg = "Error al crear relación.";
+                try {
+                    const json = await res.json();
+                    msg =
+                        json?.error ||
+                        json?.message ||
+                        (res.ok ? "Relación creada." : msg);
+                } catch {}
+                document.getElementById("msg-relacion").textContent = msg;
+                if (res.ok) form.reset();
+            });
+    </script>
+</Layout>

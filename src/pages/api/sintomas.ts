@@ -1,0 +1,57 @@
+import { getDb } from "@/lib/db.ts";
+import type { APIRoute } from "astro";
+
+export const POST: APIRoute = async ({ request }) => {
+    const data = await request.json();
+
+    // Validaciones
+    if (!data.titulo || typeof data.titulo !== "string" || data.titulo.trim().length < 2) {
+        return new Response(JSON.stringify({ ok: false, error: "Título es requerido y debe tener al menos 2 caracteres." }), { status: 400 });
+    }
+    if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 2) {
+        return new Response(JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 2 caracteres." }), { status: 400 });
+    }
+    if (!data.recomendacion || typeof data.recomendacion !== "string" || data.recomendacion.trim().length < 2) {
+        return new Response(JSON.stringify({ ok: false, error: "Recomendación es requerida y debe tener al menos 2 caracteres." }), { status: 400 });
+    }
+    if (!data.emergencia || typeof data.emergencia !== "string" || data.emergencia.trim().length < 1) {
+        return new Response(JSON.stringify({ ok: false, error: "Emergencia es requerida." }), { status: 400 });
+    }
+    if (data.categoria && typeof data.categoria !== "string") {
+        return new Response(JSON.stringify({ ok: false, error: "Categoría debe ser texto." }), { status: 400 });
+    }
+    if (data.frecuencia && typeof data.frecuencia !== "string") {
+        return new Response(JSON.stringify({ ok: false, error: "Frecuencia debe ser texto." }), { status: 400 });
+    }
+
+    const db = await getDb();
+    try {
+        // Verificar si ya existe el síntoma con ese título
+        const existe = await db.get(
+            "SELECT id FROM sintomas WHERE titulo = ?",
+            data.titulo.trim()
+        );
+        if (existe) {
+            await db.close();
+            return new Response(JSON.stringify({ ok: false, error: "Ya existe un síntoma con ese título." }), { status: 409 });
+        }
+
+        await db.run(
+            `INSERT INTO sintomas (titulo, descripcion, recomendacion, emergencia, categoria, frecuencia)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+                data.titulo.trim(),
+                data.descripcion.trim(),
+                data.recomendacion.trim(),
+                data.emergencia.trim(),
+                data.categoria ? data.categoria.trim() : null,
+                data.frecuencia ? data.frecuencia.trim() : null,
+            ]
+        );
+        await db.close();
+        return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    } catch (e) {
+        await db.close();
+        return new Response(JSON.stringify({ ok: false, error: "Error al insertar síntoma." }), { status: 400 });
+    }
+};
