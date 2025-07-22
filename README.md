@@ -1,52 +1,62 @@
-# Astro Starter Kit: Basics
+# Capsulin
 
-```sh
-npm create astro@latest -- --template basics
+**Capsulin** es un asistente farmacéutico web desarrollado con [Astro](https://astro.build/), diseñado para la gestión y consulta de medicamentos, síntomas y relaciones entre ellos. El sistema permite a usuarios y administradores buscar información, gestionar bases de datos y obtener recomendaciones de tratamiento de manera sencilla y rápida.
+
+## 🚀 Características principales
+
+- **Panel de administración**: CRUD de medicamentos, dosis, presentaciones, síntomas y relaciones.
+- **Buscador inteligente**: Permite a los usuarios consultar síntomas y medicamentos, mostrando recomendaciones y contraindicaciones.
+- **Modal de edición**: Edición rápida de registros mediante modales dinámicos.
+- **Filtros y paginación**: Navegación eficiente por grandes volúmenes de datos.
+- **Validaciones robustas**: Validación tanto en frontend como en backend para mantener la integridad de los datos.
+- **Interfaz moderna**: UI responsiva y amigable, construida con TailwindCSS y componentes personalizados.
+
+## 📁 Estructura del proyecto
+
 ```
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
 /
 ├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+│   ├── favicon.svg
+│   └── assets/js/         # Scripts JS para interacción y lógica del frontend
+├── src/
+│   ├── assets/            # Imágenes y SVGs
+│   ├── layouts/           # Layouts base de Astro
+│   ├── lib/               # Utilidades y conexión a base de datos
+│   ├── pages/
+│   │   ├── admin/         # Panel de administración (listado y formularios)
+│   │   ├── api/           # Endpoints API REST (v1 y list)
+│   │   └── index.astro    # Página principal
+│   ├── styles/            # CSS global
+│   └── utils/             # Utilidades de paginación y helpers
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 🧑‍💻 Instalación y uso
 
-## 🧞 Commands
+1. **Instala dependencias**
+   ```sh
+   npm install
+   ```
 
-All commands are run from the root of the project, from a terminal:
+2. **Inicia el servidor de desarrollo**
+   ```sh
+   npm run dev
+   ```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+3. **Accede a la app**
+   - [http://localhost:4321](http://localhost:4321) para la interfaz principal.
+   - [http://localhost:4321/admin/db](http://localhost:4321/admin/db) para el panel de administración.
 
-## 👀 Want to learn more?
+4. **Comandos útiles**
+   | Comando             | Acción                                         |
+   |---------------------|-----------------------------------------------|
+   | `npm run dev`       | Inicia el servidor de desarrollo              |
+   | `npm run build`     | Genera la versión de producción               |
+   | `npm run preview`   | Previsualiza la app generada                  |
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## 📝 Tecnologías utilizadas
+
+- [Astro](https://astro.build/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [SQLite](https://www.sqlite.org/) (
