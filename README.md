@@ -1,3 +1,4 @@
+
 # Capsulin
 
 **Capsulin** es un asistente farmacéutico web desarrollado con [Astro](https://astro.build/), diseñado para la gestión y consulta de medicamentos, síntomas y relaciones entre ellos. El sistema permite a usuarios y administradores buscar información, gestionar bases de datos y obtener recomendaciones de tratamiento de manera sencilla y rápida.
@@ -59,4 +60,10 @@
 - [Astro](https://astro.build/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [TailwindCSS](https://tailwindcss.com/)
-- [SQLite](https://www.sqlite.org/) (
+- [SQLite](https://www.sqlite.org/) (vía `src/lib/db.ts`)
+- Vanilla JS para interacción dinámica
+
+## 📚 Documentación
+
+- [Documentación oficial de Astro](https://docs.astro.build)
+- [Guía de estructura de proyectos Astro](https://docs.astro.build/en/basics/project-structure/)
