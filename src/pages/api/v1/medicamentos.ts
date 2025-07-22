@@ -4,7 +4,6 @@ import type { APIRoute } from "astro";
 export const POST: APIRoute = async ({ request }) => {
     const data = await request.json();
 
-    // Validaciones
     if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 2) {
         return new Response(JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 2 caracteres." }), { status: 400 });
     }
@@ -42,6 +41,93 @@ export const POST: APIRoute = async ({ request }) => {
     } catch (e) {
         await db.close();
         return new Response(JSON.stringify({ ok: false, error: "Error al insertar medicamento." }), { status: 400 });
+    }
+};
+
+export const PUT: APIRoute = async ({ request }) => {
+    const db = await getDb();
+    try {
+        const url = new URL(request.url);
+        const id = url.searchParams.get("id");
+        const data = await request.json();
+
+        // Validaciones
+        if (!id) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "ID de medicamento requerido." }),
+                { status: 400 }
+            );
+        }
+        if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 2) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 2 caracteres." }),
+                { status: 400 }
+            );
+        }
+        if (!data.efectos || typeof data.efectos !== "string" || data.efectos.trim().length < 2) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "Efectos es requerido y debe tener al menos 2 caracteres." }),
+                { status: 400 }
+            );
+        }
+        if (data.contraindicaciones && typeof data.contraindicaciones !== "string") {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "Contraindicaciones debe ser texto." }),
+                { status: 400 }
+            );
+        }
+
+        // Verifica existencia
+        const existe = await db.get("SELECT id FROM medicamentos WHERE id = ?", id);
+        if (!existe) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "No existe un medicamento con ese ID." }),
+                { status: 404 }
+            );
+        }
+
+        const duplicado = await db.get(
+            "SELECT id FROM medicamentos WHERE nombre = ? AND presentacion_id = ? AND id != ?",
+            data.nombre.trim(),
+            data.presentacion_id.trim(),
+            id
+        );
+        if (duplicado) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ ok: false, error: "Ya existe un medicamento con ese nombre y presentación." }),
+                { status: 409 }
+            );
+        }
+
+        await db.run(
+            `UPDATE medicamentos
+             SET nombre = ?, efectos = ?, presentacion_id = ?, contraindicaciones = ?
+             WHERE id = ?`,
+            [
+                data.nombre.trim(),
+                data.efectos.trim(),
+                data.presentacion_id.trim(),
+                data.contraindicaciones ? data.contraindicaciones.trim() : null,
+                id
+            ]
+        );
+        await db.close();
+        return new Response(
+            JSON.stringify({ ok: true, message: "Medicamento actualizado correctamente." }),
+            { status: 200 }
+        );
+    } catch (e) {
+        await db.close();
+        return new Response(
+            JSON.stringify({ ok: false, error: "Error al actualizar medicamento." }),
+            { status: 500 }
+        );
     }
 };
 

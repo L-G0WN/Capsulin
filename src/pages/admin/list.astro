@@ -777,24 +777,26 @@ const {
         <div id="edit-modal-root"></div>
     </main>
 
-<script type="module">
-// Modal dinámico con soporte para campos select
-function showEditModal({ title, fields, initialData, onSave }) {
-    const root = document.getElementById("edit-modal-root");
-    root.innerHTML = "";
+    <script type="module">
+        // Modal dinámico
+        function showEditModal({ title, fields, initialData, onSave }) {
+            const root = document.getElementById("edit-modal-root");
+            root.innerHTML = "";
 
-    // Renderiza campos tipo select o input según la definición del campo
-    const renderField = (field) => {
-        if (field.type === "select" && Array.isArray(field.options)) {
-            const optionsHtml = field.options
-                .map(
-                    (opt) =>
-                        `<option value="${opt.value}"${
-                            initialData[field.name] == opt.value ? " selected" : ""
-                        }>${opt.label}</option>`
-                )
-                .join("");
-            return `
+            // Renderiza campos tipo select o input según la definición del campo
+            const renderField = (field) => {
+                if (field.type === "select" && Array.isArray(field.options)) {
+                    const optionsHtml = field.options
+                        .map(
+                            (opt) =>
+                                `<option value="${opt.value}"${
+                                    initialData[field.name] == opt.value
+                                        ? " selected"
+                                        : ""
+                                }>${opt.label}</option>`,
+                        )
+                        .join("");
+                    return `
                 <div>
                     <label class="block mb-1 font-semibold text-blue-900" for="${field.name}">${field.label}</label>
                     <select
@@ -807,8 +809,8 @@ function showEditModal({ title, fields, initialData, onSave }) {
                     </select>
                 </div>
             `;
-        } else {
-            return `
+                } else {
+                    return `
                 <div>
                     <label class="block mb-1 font-semibold text-blue-900" for="${field.name}">${field.label}</label>
                     <input
@@ -821,11 +823,11 @@ function showEditModal({ title, fields, initialData, onSave }) {
                     />
                 </div>
             `;
-        }
-    };
+                }
+            };
 
-    const modal = document.createElement("div");
-    modal.innerHTML = `
+            const modal = document.createElement("div");
+            modal.innerHTML = `
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
             <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative">
                 <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl" id="close-modal">&times;</button>
@@ -841,212 +843,334 @@ function showEditModal({ title, fields, initialData, onSave }) {
             </div>
         </div>
     `;
-    root.appendChild(modal);
+            root.appendChild(modal);
 
-    modal.querySelector("#close-modal").onclick = () => (root.innerHTML = "");
-    modal.querySelector("#cancel-modal").onclick = (e) => {
-        e.preventDefault();
-        root.innerHTML = "";
-    };
+            modal.querySelector("#close-modal").onclick = () =>
+                (root.innerHTML = "");
+            modal.querySelector("#cancel-modal").onclick = (e) => {
+                e.preventDefault();
+                root.innerHTML = "";
+            };
 
-    modal.querySelector("#modal-edit-form").onsubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = {};
-        fields.forEach((f) => (data[f.name] = formData.get(f.name)));
-        try {
-            await onSave(data);
-        } catch (err) {
-            modal.querySelector("#modal-edit-msg").textContent = "Error al editar";
+            modal.querySelector("#modal-edit-form").onsubmit = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = {};
+                fields.forEach((f) => (data[f.name] = formData.get(f.name)));
+                try {
+                    await onSave(data);
+                } catch (err) {
+                    modal.querySelector("#modal-edit-msg").textContent =
+                        "Error al editar";
+                }
+            };
         }
-    };
-}
 
-// Conecta los botones de editar con el modal y define los campos
-document.addEventListener("DOMContentLoaded", () => {
-    // Presentaciones
-    document.querySelectorAll(".edit-presentacion").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            showEditModal({
-                title: "Editar Presentación",
-                fields: [
-                    { name: "nombre", label: "Nombre", required: true }
-                ],
-                initialData: {
-                    nombre: btn.closest("tr").querySelector("td:nth-child(2)").textContent.trim()
-                },
-                onSave: async (data) => {
-                    const id = btn.dataset.id;
-                    const res = await fetch(`/api/v1/presentaciones?id=${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
+        // Conecta los botones de editar con el modal y define los campos
+        document.addEventListener("DOMContentLoaded", () => {
+            // Presentaciones
+            document.querySelectorAll(".edit-presentacion").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    showEditModal({
+                        title: "Editar Presentación",
+                        fields: [
+                            { name: "nombre", label: "Nombre", required: true },
+                        ],
+                        initialData: {
+                            nombre: btn
+                                .closest("tr")
+                                .querySelector("td:nth-child(2)")
+                                .textContent.trim(),
+                        },
+                        onSave: async (data) => {
+                            const id = btn.dataset.id;
+                            const res = await fetch(
+                                `/api/v1/presentaciones?id=${id}`,
+                                {
+                                    method: "PUT",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                },
+                            );
+                            if (res.ok) location.reload();
+                            else
+                                document.getElementById(
+                                    "modal-edit-msg",
+                                ).textContent = "Error al editar";
+                        },
                     });
-                    if (res.ok) location.reload();
-                    else document.getElementById("modal-edit-msg").textContent = "Error al editar";
-                }
+                });
             });
-        });
-    });
 
-    // Dosis
-    document.querySelectorAll(".edit-dosis").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            showEditModal({
-                title: "Editar Dosis",
-                fields: [
-                    { name: "cantidad", label: "Cantidad", required: true }
-                ],
-                initialData: {
-                    cantidad: btn.closest("tr").querySelector("td:nth-child(2)").textContent.trim()
-                },
-                onSave: async (data) => {
-                    const id = btn.dataset.id;
-                    const res = await fetch(`/api/v1/dosis?id=${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
+            // Dosis
+            document.querySelectorAll(".edit-dosis").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    showEditModal({
+                        title: "Editar Dosis",
+                        fields: [
+                            {
+                                name: "cantidad",
+                                label: "Cantidad",
+                                required: true,
+                            },
+                        ],
+                        initialData: {
+                            cantidad: btn
+                                .closest("tr")
+                                .querySelector("td:nth-child(2)")
+                                .textContent.trim(),
+                        },
+                        onSave: async (data) => {
+                            const id = btn.dataset.id;
+                            const res = await fetch(`/api/v1/dosis?id=${id}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(data),
+                            });
+                            if (res.ok) location.reload();
+                            else
+                                document.getElementById(
+                                    "modal-edit-msg",
+                                ).textContent = "Error al editar";
+                        },
                     });
-                    if (res.ok) location.reload();
-                    else document.getElementById("modal-edit-msg").textContent = "Error al editar";
-                }
+                });
             });
-        });
-    });
 
-    // Medicamentos
-    document.querySelectorAll(".edit-medicamento").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const tr = btn.closest("tr");
-            showEditModal({
-                title: "Editar Medicamento",
-                fields: [
-                    { name: "nombre", label: "Nombre", required: true },
-                    { name: "efectos", label: "Efectos", required: true },
-                    {
-                        name: "presentacion",
-                        label: "Presentación",
-                        required: true,
-                        type: "select",
-                        options: Array.from(document.querySelectorAll(".edit-presentacion")).map(rowBtn => ({
-                            value: rowBtn.dataset.id,
-                            label: rowBtn.closest("tr").querySelector("td:nth-child(2)").textContent.trim()
-                        }))
-                    },
-                    { name: "contraindicaciones", label: "Contraindicaciones", required: false }
-                ],
-                initialData: {
-                    nombre: tr.querySelector("td:nth-child(2)").textContent.trim(),
-                    efectos: tr.querySelector("td:nth-child(3)").textContent.trim(),
-                    presentacion: tr.querySelector("td:nth-child(4)").textContent.trim(),
-                    contraindicaciones: tr.querySelector("td:nth-child(5)").textContent.trim()
-                },
-                onSave: async (data) => {
-                    const id = btn.dataset.id;
-                    const res = await fetch(`/api/v1/medicamentos?id=${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
+            // Medicamentos
+            document.querySelectorAll(".edit-medicamento").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const tr = btn.closest("tr");
+                    showEditModal({
+                        title: "Editar Medicamento",
+                        fields: [
+                            { name: "nombre", label: "Nombre", required: true },
+                            {
+                                name: "efectos",
+                                label: "Efectos",
+                                required: true,
+                            },
+                            {
+                                name: "presentacion",
+                                label: "Presentación",
+                                required: true,
+                                type: "select",
+                                options: Array.from(
+                                    document.querySelectorAll(
+                                        ".edit-presentacion",
+                                    ),
+                                ).map((rowBtn) => ({
+                                    value: rowBtn.dataset.id,
+                                    label: rowBtn
+                                        .closest("tr")
+                                        .querySelector("td:nth-child(2)")
+                                        .textContent.trim(),
+                                })),
+                            },
+                            {
+                                name: "contraindicaciones",
+                                label: "Contraindicaciones",
+                                required: false,
+                            },
+                        ],
+                        initialData: {
+                            nombre: tr
+                                .querySelector("td:nth-child(2)")
+                                .textContent.trim(),
+                            efectos: tr
+                                .querySelector("td:nth-child(3)")
+                                .textContent.trim(),
+                            presentacion: tr
+                                .querySelector("td:nth-child(4)")
+                                .textContent.trim(),
+                            contraindicaciones: tr
+                                .querySelector("td:nth-child(5)")
+                                .textContent.trim(),
+                        },
+                        onSave: async (data) => {
+                            const id = btn.dataset.id;
+                            const res = await fetch(
+                                `/api/v1/medicamentos?id=${id}`,
+                                {
+                                    method: "PUT",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                },
+                            );
+                            if (res.ok) location.reload();
+                            else
+                                document.getElementById(
+                                    "modal-edit-msg",
+                                ).textContent = "Error al editar";
+                        },
                     });
-                    if (res.ok) location.reload();
-                    else document.getElementById("modal-edit-msg").textContent = "Error al editar";
-                }
+                });
             });
-        });
-    });
 
-    // Síntomas
-    document.querySelectorAll(".edit-sintoma").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const tr = btn.closest("tr");
-            showEditModal({
-                title: "Editar Síntoma",
-                fields: [
-                    { name: "titulo", label: "Título", required: true },
-                    { name: "descripcion", label: "Descripción", required: true },
-                    { name: "recomendacion", label: "Recomendación", required: true },
-                    { name: "emergencia", label: "Emergencia", required: true },
-                    { name: "categoria", label: "Categoría", required: false },
-                    { name: "frecuencia", label: "Frecuencia", required: false }
-                ],
-                initialData: {
-                    titulo: tr.querySelector("td:nth-child(2)").textContent.trim(),
-                    descripcion: tr.querySelector("td:nth-child(3)").textContent.trim(),
-                    recomendacion: tr.querySelector("td:nth-child(4)").textContent.trim(),
-                    emergencia: tr.querySelector("td:nth-child(5)").textContent.trim(),
-                    categoria: tr.querySelector("td:nth-child(6)").textContent.trim(),
-                    frecuencia: tr.querySelector("td:nth-child(7)").textContent.trim()
-                },
-                onSave: async (data) => {
-                    const id = btn.dataset.id;
-                    const res = await fetch(`/api/v1/sintomas?id=${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
+            // Síntomas
+            document.querySelectorAll(".edit-sintoma").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const tr = btn.closest("tr");
+                    showEditModal({
+                        title: "Editar Síntoma",
+                        fields: [
+                            { name: "titulo", label: "Título", required: true },
+                            {
+                                name: "descripcion",
+                                label: "Descripción",
+                                required: true,
+                            },
+                            {
+                                name: "recomendacion",
+                                label: "Recomendación",
+                                required: true,
+                            },
+                            {
+                                name: "emergencia",
+                                label: "Emergencia",
+                                required: true,
+                            },
+                            {
+                                name: "categoria",
+                                label: "Categoría",
+                                required: false,
+                            },
+                            {
+                                name: "frecuencia",
+                                label: "Frecuencia",
+                                required: false,
+                            },
+                        ],
+                        initialData: {
+                            titulo: tr
+                                .querySelector("td:nth-child(2)")
+                                .textContent.trim(),
+                            descripcion: tr
+                                .querySelector("td:nth-child(3)")
+                                .textContent.trim(),
+                            recomendacion: tr
+                                .querySelector("td:nth-child(4)")
+                                .textContent.trim(),
+                            emergencia: tr
+                                .querySelector("td:nth-child(5)")
+                                .textContent.trim(),
+                            categoria: tr
+                                .querySelector("td:nth-child(6)")
+                                .textContent.trim(),
+                            frecuencia: tr
+                                .querySelector("td:nth-child(7)")
+                                .textContent.trim(),
+                        },
+                        onSave: async (data) => {
+                            const id = btn.dataset.id;
+                            const res = await fetch(
+                                `/api/v1/sintomas?id=${id}`,
+                                {
+                                    method: "PUT",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                },
+                            );
+                            if (res.ok) location.reload();
+                            else
+                                document.getElementById(
+                                    "modal-edit-msg",
+                                ).textContent = "Error al editar";
+                        },
                     });
-                    if (res.ok) location.reload();
-                    else document.getElementById("modal-edit-msg").textContent = "Error al editar";
-                }
+                });
             });
-        });
-    });
 
-    // Relaciones
-    document.querySelectorAll(".edit-relacion").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const tr = btn.closest("tr");
-            showEditModal({
-                title: "Editar Relación",
-                fields: [
-                    {
-                        name: "dosis",
-                        label: "Dosis",
-                        required: true,
-                        type: "select",
-                        options: Array.from(document.querySelectorAll(".edit-dosis")).map(rowBtn => ({
-                            value: rowBtn.closest("tr").querySelector("td:nth-child(2)").textContent.trim(),
-                            label: rowBtn.closest("tr").querySelector("td:nth-child(2)").textContent.trim()
-                        }))
-                    },
-                    { name: "duracion", label: "Duración", required: true },
-                    {
-                        name: "intensidad",
-                        label: "Intensidad",
-                        required: true,
-                        type: "select",
-                        options: [
-                            { value: "Normal", label: "Normal" },
-                            { value: "Medio", label: "Medio" },
-                            { value: "Muy Fuerte", label: "Muy Fuerte" }
-                        ]
-                    }
-                ],
-                initialData: {
-                    dosis: tr.querySelector("td:nth-child(3)").textContent.trim(),
-                    duracion: tr.querySelector("td:nth-child(4)").textContent.trim(),
-                    intensidad: tr.querySelector("td:nth-child(5)").textContent.trim()
-                },
-                onSave: async (data) => {
-                    const sid = btn.dataset.sid;
-                    const mid = btn.dataset.mid;
-                    const dosis = encodeURIComponent(btn.dataset.dosis);
-                    const intensidad = encodeURIComponent(btn.dataset.intensidad);
-                    const res = await fetch(
-                        `/api/v1/relacion?sintoma_id=${sid}&medicamento_id=${mid}&dosis=${dosis}&intensidad=${intensidad}`,
-                        {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(data)
-                        }
-                    );
-                    if (res.ok) location.reload();
-                    else document.getElementById("modal-edit-msg").textContent = "Error al editar";
-                }
+            // Relaciones
+            document.querySelectorAll(".edit-relacion").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const tr = btn.closest("tr");
+                    showEditModal({
+                        title: "Editar Relación",
+                        fields: [
+                            {
+                                name: "dosis",
+                                label: "Dosis",
+                                required: true,
+                                type: "select",
+                                options: Array.from(
+                                    document.querySelectorAll(".edit-dosis"),
+                                ).map((rowBtn) => ({
+                                    value: rowBtn
+                                        .closest("tr")
+                                        .querySelector("td:nth-child(2)")
+                                        .textContent.trim(),
+                                    label: rowBtn
+                                        .closest("tr")
+                                        .querySelector("td:nth-child(2)")
+                                        .textContent.trim(),
+                                })),
+                            },
+                            {
+                                name: "duracion",
+                                label: "Duración",
+                                required: true,
+                            },
+                            {
+                                name: "intensidad",
+                                label: "Intensidad",
+                                required: true,
+                                type: "select",
+                                options: [
+                                    { value: "Normal", label: "Normal" },
+                                    { value: "Medio", label: "Medio" },
+                                    {
+                                        value: "Muy Fuerte",
+                                        label: "Muy Fuerte",
+                                    },
+                                ],
+                            },
+                        ],
+                        initialData: {
+                            dosis: tr
+                                .querySelector("td:nth-child(3)")
+                                .textContent.trim(),
+                            duracion: tr
+                                .querySelector("td:nth-child(4)")
+                                .textContent.trim(),
+                            intensidad: tr
+                                .querySelector("td:nth-child(5)")
+                                .textContent.trim(),
+                        },
+                        onSave: async (data) => {
+                            const sid = btn.dataset.sid;
+                            const mid = btn.dataset.mid;
+                            const dosis = encodeURIComponent(btn.dataset.dosis);
+                            const intensidad = encodeURIComponent(
+                                btn.dataset.intensidad,
+                            );
+                            const res = await fetch(
+                                `/api/v1/relacion?sintoma_id=${sid}&medicamento_id=${mid}&dosis=${dosis}&intensidad=${intensidad}`,
+                                {
+                                    method: "PUT",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                },
+                            );
+                            if (res.ok) location.reload();
+                            else
+                                document.getElementById(
+                                    "modal-edit-msg",
+                                ).textContent = "Error al editar";
+                        },
+                    });
+                });
             });
         });
-    });
-});
-</script>
+    </script>
 
     <script type="module">
         // Filtro de búsqueda para presentaciones

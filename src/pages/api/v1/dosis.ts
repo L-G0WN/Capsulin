@@ -39,6 +39,67 @@ export const POST: APIRoute = async ({ request }) => {
     }
 };
 
+export const PUT: APIRoute = async ({ request }) => {
+    const db = await getDb();
+    try {
+        const url = new URL(request.url);
+        const id = url.searchParams.get("id");
+        const body = await request.json();
+        const cantidad = (body.cantidad || "").trim();
+
+        if (!id) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ error: "ID de dosis requerido." }),
+                { status: 400, headers: { "Content-Type": "application/json" } }
+            );
+        }
+
+        if (!cantidad || cantidad.length < 2 || cantidad.length > 32) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ error: "La cantidad es obligatoria y debe tener entre 2 y 32 caracteres." }),
+                { status: 400, headers: { "Content-Type": "application/json" } }
+            );
+        }
+
+        const existe = await db.get("SELECT id FROM dosis WHERE id = ?", id);
+        if (!existe) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ error: "No existe una dosis con ese ID." }),
+                { status: 404, headers: { "Content-Type": "application/json" } }
+            );
+        }
+
+        const duplicado = await db.get(
+            "SELECT id FROM dosis WHERE cantidad = ? AND id != ?",
+            cantidad,
+            id
+        );
+        if (duplicado) {
+            await db.close();
+            return new Response(
+                JSON.stringify({ error: "Ya existe una dosis con esa cantidad." }),
+                { status: 409, headers: { "Content-Type": "application/json" } }
+            );
+        }
+
+        await db.run("UPDATE dosis SET cantidad = ? WHERE id = ?", cantidad, id);
+        await db.close();
+        return new Response(
+            JSON.stringify({ message: "Dosis actualizada correctamente." }),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+    } catch (error) {
+        await db.close();
+        return new Response(
+            JSON.stringify({ error: "Error al actualizar la dosis." }),
+            { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+    }
+};
+
 export const DELETE: APIRoute = async ({ request }) => {
     const db = await getDb();
     try {
