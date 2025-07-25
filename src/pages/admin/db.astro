@@ -3,8 +3,10 @@
 import Layout from "@/layouts/Layout.astro";
 ---
 
-<Layout title="Panel de Base de Datos" descripcion="Administra medicamentos, síntomas y relaciones">
-
+<Layout
+    title="Panel de Base de Datos"
+    descripcion="Administra medicamentos, síntomas y relaciones"
+>
     <!-- Botones -->
     <div class="w-full flex flex-wrap justify-center gap-2 pt-4 mb-6">
         <a
@@ -22,12 +24,30 @@ import Layout from "@/layouts/Layout.astro";
     </div>
 
     <main class="container mx-auto max-w-4xl px-2">
-        <h1 class="text-3xl font-extrabold mb-10 text-blue-800 text-center tracking-tight drop-shadow">Panel de Base de Datos</h1>
+        <h1
+            class="text-3xl font-extrabold mb-10 text-blue-800 text-center tracking-tight drop-shadow"
+        >
+            Panel de Base de Datos
+        </h1>
         <div class="grid md:grid-cols-2 gap-8">
             <!-- Formulario de Presentación -->
-            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
-                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M12 8v8"/></svg>
+            <section
+                class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
+            >
+                <h2
+                    class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2"
+                >
+                    <svg
+                        class="w-6 h-6 text-blue-500"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        ><circle cx="12" cy="12" r="10"></circle><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M8 12h8M12 8v8"></path></svg
+                    >
                     Agregar Presentación
                 </h2>
                 <form id="form-presentacion" class="space-y-4">
@@ -41,15 +61,31 @@ import Layout from "@/layouts/Layout.astro";
                     <button
                         type="submit"
                         class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
-                    >Agregar Presentación</button>
+                        >Agregar Presentación</button
+                    >
                 </form>
-                <div id="msg-presentacion" class="mt-3 text-sm text-center"></div>
+                <div id="msg-presentacion" class="mt-3 text-sm text-center">
+                </div>
             </section>
 
             <!-- Formulario de Dosis -->
-            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
-                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M12 8v8"/></svg>
+            <section
+                class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
+            >
+                <h2
+                    class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2"
+                >
+                    <svg
+                        class="w-6 h-6 text-blue-500"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        ><circle cx="12" cy="12" r="10"></circle><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M8 12h8M12 8v8"></path></svg
+                    >
                     Agregar Dosis
                 </h2>
                 <form id="form-dosis" class="space-y-4">
@@ -63,7 +99,8 @@ import Layout from "@/layouts/Layout.astro";
                     <button
                         type="submit"
                         class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
-                    >Agregar Dosis</button>
+                        >Agregar Dosis</button
+                    >
                 </form>
                 <div id="msg-dosis" class="mt-3 text-sm text-center"></div>
             </section>
@@ -71,9 +108,24 @@ import Layout from "@/layouts/Layout.astro";
 
         <div class="grid md:grid-cols-2 gap-8 mt-10">
             <!-- Formulario de Medicamento -->
-            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
-                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            <section
+                class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
+            >
+                <h2
+                    class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2"
+                >
+                    <svg
+                        class="w-6 h-6 text-blue-500"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"
+                        ></path><circle cx="9" cy="7" r="4"></circle></svg
+                    >
                     Agregar Medicamento
                 </h2>
                 <form id="form-medicamento" class="space-y-4">
@@ -97,7 +149,9 @@ import Layout from "@/layouts/Layout.astro";
                         class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         required
                     >
-                        <option value="" disabled selected>Selecciona la presentación</option>
+                        <option value="" disabled selected
+                            >Selecciona la presentación</option
+                        >
                     </select>
                     <input
                         type="text"
@@ -108,15 +162,32 @@ import Layout from "@/layouts/Layout.astro";
                     <button
                         type="submit"
                         class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
-                    >Agregar Medicamento</button>
+                        >Agregar Medicamento</button
+                    >
                 </form>
-                <div id="msg-medicamento" class="mt-3 text-sm text-center"></div>
+                <div id="msg-medicamento" class="mt-3 text-sm text-center">
+                </div>
             </section>
 
             <!-- Formulario de Síntoma -->
-            <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
-                <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            <section
+                class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
+            >
+                <h2
+                    class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2"
+                >
+                    <svg
+                        class="w-6 h-6 text-blue-500"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"
+                        ></path><circle cx="9" cy="7" r="4"></circle></svg
+                    >
                     Agregar Síntoma
                 </h2>
                 <form id="form-sintoma" class="space-y-4">
@@ -161,16 +232,34 @@ import Layout from "@/layouts/Layout.astro";
                     <button
                         type="submit"
                         class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
-                    >Agregar Síntoma</button>
+                        >Agregar Síntoma</button
+                    >
                 </form>
                 <div id="msg-sintoma" class="mt-3 text-sm text-center"></div>
             </section>
         </div>
 
         <!-- Formulario de Relación -->
-        <section class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100 mt-12">
-            <h2 class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
-                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="8" cy="7" r="4"></circle></svg>
+        <section
+            class="bg-white rounded-2xl shadow-lg p-8 border border-blue-100 mt-12"
+        >
+            <h2
+                class="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2"
+            >
+                <svg
+                    class="w-6 h-6 text-blue-500"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle
+                        cx="8"
+                        cy="7"
+                        r="4"></circle></svg
+                >
                 Relacionar Síntoma y Medicamento
             </h2>
             <form id="form-relacion" class="space-y-4">
@@ -217,7 +306,8 @@ import Layout from "@/layouts/Layout.astro";
                 <button
                     type="submit"
                     class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition"
-                >Crear Relación</button>
+                    >Crear Relación</button
+                >
             </form>
             <div id="msg-relacion" class="mt-3 text-sm text-center"></div>
         </section>
@@ -238,15 +328,79 @@ import Layout from "@/layouts/Layout.astro";
                                 `<option value="${item.id}">${item[labelKey]}</option>`,
                         )
                         .join("");
+                if (selectId === "sintoma-select" && select.value) {
+                    cargarMedicamentosPorSintoma(select.value);
+                }
             } catch {
                 select.innerHTML =
                     '<option value="" disabled>Error al cargar</option>';
             }
         }
-        loadSelect("/api/list/sintomas?noRelacionados=true", "sintoma-select", "titulo");
-        loadSelect("/api/list/medicamentos", "medicamento-select", "nombre");
+
+        function cargarMedicamentosPorSintoma(sintomaId) {
+            const medicamentoSelect =
+                document.getElementById("medicamento-select");
+            medicamentoSelect.innerHTML =
+                '<option value="">Cargando...</option>';
+            fetch(`/api/list/medicamentos?sintomaId=${sintomaId}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    medicamentoSelect.innerHTML =
+                        '<option value="" disabled>Selecciona el medicamento</option>' +
+                        data
+                            .map(
+                                (item) =>
+                                    `<option value="${item.id}">${item.nombre} - ${item.presentacion}</option>`,
+                            )
+                            .join("");
+                })
+                .catch(() => {
+                    medicamentoSelect.innerHTML =
+                        '<option value="" disabled>Error al cargar</option>';
+                });
+        }
+
+        loadSelect(
+            "/api/list/sintomas?noRelacionados=false",
+            "sintoma-select",
+            "titulo",
+        );
         loadSelect("/api/list/presentaciones", "presentacion-select", "nombre");
         loadSelect("/api/list/dosis", "dosis-select", "cantidad");
+
+        document
+            .getElementById("sintoma-select")
+            .addEventListener("change", (e) => {
+                if (e.target.value)
+                    cargarMedicamentosPorSintoma(e.target.value);
+            });
+
+        document
+            .getElementById("sintoma-select")
+            .addEventListener("change", async (e) => {
+                const sintomaId = e.target.value;
+                const medicamentoSelect =
+                    document.getElementById("medicamento-select");
+                medicamentoSelect.innerHTML =
+                    '<option value="">Cargando...</option>';
+                try {
+                    const res = await fetch(
+                        `/api/list/medicamentos?sintomaId=${sintomaId}`,
+                    );
+                    const data = await res.json();
+                    medicamentoSelect.innerHTML =
+                        '<option value="" disabled>Selecciona el medicamento</option>' +
+                        data
+                            .map(
+                                (item) =>
+                                    `<option value="${item.id}">${item.nombre} - ${item.presentacion}</option>`,
+                            )
+                            .join("");
+                } catch {
+                    medicamentoSelect.innerHTML =
+                        '<option value="" disabled>Error al cargar</option>';
+                }
+            });
 
         // Presentación
         document
@@ -271,7 +425,11 @@ import Layout from "@/layouts/Layout.astro";
                 document.getElementById("msg-presentacion").textContent = msg;
                 if (res.ok) {
                     form.reset();
-                    loadSelect("/api/list/presentaciones", "presentacion-select", "nombre");
+                    loadSelect(
+                        "/api/list/presentaciones",
+                        "presentacion-select",
+                        "nombre",
+                    );
                 }
             });
 
