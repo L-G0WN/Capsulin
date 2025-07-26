@@ -13,32 +13,26 @@ export const POST: APIRoute = async ({ request }) => {
     if (!data.intensidad || typeof data.intensidad !== "string" || !["Normal", "Medio", "Muy Fuerte"].includes(data.intensidad)) {
         return new Response(JSON.stringify({ ok: false, error: "Intensidad inválida." }), { status: 400 });
     }
-    if (!data.duracion || typeof data.duracion !== "string" || data.duracion.trim().length < 1) {
-        return new Response(JSON.stringify({ ok: false, error: "Duración es requerida y debe ser texto." }), { status: 400 });
-    }
 
     const db = await getDb();
     try {
         const existe = await db.get(
-            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND dosis_id = ? AND intensidad = ?`,
+            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND intensidad = ?`,
             Number(data.sintoma_id),
             Number(data.medicamento_id),
-            Number(data.dosis_id),
             data.intensidad
         );
         if (existe) {
             await db.close();
-            return new Response(JSON.stringify({ ok: false, error: "Ya existe esta relación para ese síntoma, medicamento, dosis e intensidad." }), { status: 409 });
+            return new Response(JSON.stringify({ ok: false, error: "Ya existe esta relación para ese síntoma, medicamento e intensidad." }), { status: 409 });
         }
 
         await db.run(
-            `INSERT INTO sintoma_medicamento (sintoma_id, medicamento_id, dosis_id, duracion, intensidad)
-             VALUES (?, ?, ?, ?, ?)`,
+            `INSERT INTO sintoma_medicamento (sintoma_id, medicamento_id, intensidad)
+             VALUES (?, ?, ?)`,
             [
                 Number(data.sintoma_id),
                 Number(data.medicamento_id),
-                Number(data.dosis_id),
-                data.duracion ? data.duracion.trim() : null,
                 data.intensidad
             ]
         );
@@ -56,7 +50,6 @@ export const PUT: APIRoute = async ({ request }) => {
         const url = new URL(request.url);
         const sintoma_id = url.searchParams.get("sintoma_id");
         const medicamento_id = url.searchParams.get("medicamento_id");
-        const dosis = url.searchParams.get("dosis");
         const intensidad = url.searchParams.get("intensidad");
         const data = await request.json();
 
@@ -68,33 +61,20 @@ export const PUT: APIRoute = async ({ request }) => {
             await db.close();
             return new Response(JSON.stringify({ ok: false, error: "ID de medicamento inválido." }), { status: 400 });
         }
-        if (!dosis) {
-            await db.close();
-            return new Response(JSON.stringify({ ok: false, error: "Dosis es requerida." }), { status: 400 });
-        }
         if (!intensidad || typeof intensidad !== "string" || !["Normal", "Medio", "Muy Fuerte"].includes(intensidad)) {
             await db.close();
             return new Response(JSON.stringify({ ok: false, error: "Intensidad inválida." }), { status: 400 });
         }
 
-        if (!data.dosis) {
-            await db.close();
-            return new Response(JSON.stringify({ ok: false, error: "Nueva dosis es requerida." }), { status: 400 });
-        }
-        if (!data.duracion || typeof data.duracion !== "string" || data.duracion.trim().length < 1) {
-            await db.close();
-            return new Response(JSON.stringify({ ok: false, error: "Duración es requerida y debe ser texto." }), { status: 400 });
-        }
         if (!data.intensidad || typeof data.intensidad !== "string" || !["Normal", "Medio", "Muy Fuerte"].includes(data.intensidad)) {
             await db.close();
             return new Response(JSON.stringify({ ok: false, error: "Nueva intensidad inválida." }), { status: 400 });
         }
 
         const existe = await db.get(
-            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND dosis = ? AND intensidad = ?`,
+            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND intensidad = ?`,
             Number(sintoma_id),
             Number(medicamento_id),
-            dosis,
             intensidad
         );
         if (!existe) {
@@ -103,12 +83,10 @@ export const PUT: APIRoute = async ({ request }) => {
         }
 
         const duplicado = await db.get(
-            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND dosis = ? AND intensidad = ? AND NOT (dosis = ? AND intensidad = ?)`,
+            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND intensidad = ? AND NOT intensidad = ?`,
             Number(sintoma_id),
             Number(medicamento_id),
-            data.dosis,
             data.intensidad,
-            dosis,
             intensidad
         );
         if (duplicado) {
@@ -118,14 +96,11 @@ export const PUT: APIRoute = async ({ request }) => {
 
         await db.run(
             `UPDATE sintoma_medicamento
-             SET dosis = ?, duracion = ?, intensidad = ?
-             WHERE sintoma_id = ? AND medicamento_id = ? AND dosis = ? AND intensidad = ?`,
-            data.dosis,
-            data.duracion.trim(),
+             SET intensidad = ?
+             WHERE sintoma_id = ? AND medicamento_id = ? AND intensidad = ?`,
             data.intensidad,
             Number(sintoma_id),
             Number(medicamento_id),
-            dosis,
             intensidad
         );
         await db.close();
@@ -148,10 +123,9 @@ export const DELETE: APIRoute = async ({ request }) => {
         const url = new URL(request.url);
         const sintoma_id = url.searchParams.get("sintoma_id");
         const medicamento_id = url.searchParams.get("medicamento_id");
-        const dosis = url.searchParams.get("dosis");
         const intensidad = url.searchParams.get("intensidad");
 
-        if (!sintoma_id || !medicamento_id || !dosis || !intensidad) {
+        if (!sintoma_id || !medicamento_id || !intensidad) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Faltan parámetros para eliminar la relación." }),
@@ -160,10 +134,9 @@ export const DELETE: APIRoute = async ({ request }) => {
         }
 
         const existe = await db.get(
-            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND dosis = ? AND intensidad = ?`,
+            `SELECT 1 FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND intensidad = ?`,
             Number(sintoma_id),
             Number(medicamento_id),
-            dosis,
             intensidad
         );
         if (!existe) {
@@ -175,10 +148,9 @@ export const DELETE: APIRoute = async ({ request }) => {
         }
 
         await db.run(
-            `DELETE FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND dosis = ? AND intensidad = ?`,
+            `DELETE FROM sintoma_medicamento WHERE sintoma_id = ? AND medicamento_id = ? AND intensidad = ?`,
             Number(sintoma_id),
             Number(medicamento_id),
-            dosis,
             intensidad
         );
         await db.close();

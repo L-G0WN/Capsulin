@@ -7,9 +7,8 @@ export const GET: APIRoute = async ({ url }) => {
     let medicamentos;
     if (sintomaId) {
         medicamentos = await db.all(`
-            SELECT m.id, m.nombre, m.presentacion_id, p.nombre AS presentacion
+            SELECT m.id, m.nombre, m.activo
             FROM medicamentos m
-            JOIN presentaciones p ON m.presentacion_id = p.id
             WHERE m.id NOT IN (
                 SELECT medicamento_id FROM sintoma_medicamento WHERE sintoma_id = ?
             )
@@ -17,7 +16,7 @@ export const GET: APIRoute = async ({ url }) => {
         `, sintomaId);
     } else {
         medicamentos = await db.all(`
-            SELECT m.id, m.nombre
+            SELECT m.id, m.nombre, m.activo
             FROM medicamentos m
             ORDER BY m.nombre ASC
         `);

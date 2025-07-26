@@ -9,31 +9,12 @@ const init = async () => {
 
   await db.exec('PRAGMA foreign_keys = ON');
 
-  // Tabla de síntomas
   await db.exec(`
     CREATE TABLE IF NOT EXISTS sintomas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      titulo TEXT NOT NULL UNIQUE,
+      nombre TEXT NOT NULL UNIQUE,
       descripcion TEXT NOT NULL,
-      recomendacion TEXT NOT NULL,
-      emergencia TEXT NOT NULL,
-      categoria TEXT,
-      frecuencia TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS presentaciones (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT NOT NULL UNIQUE
-    )
-  `);
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS dosis (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      cantidad TEXT NOT NULL UNIQUE
     )
   `);
 
@@ -41,12 +22,11 @@ const init = async () => {
     CREATE TABLE IF NOT EXISTS medicamentos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nombre TEXT NOT NULL,
+      activo TEXT NOT NULL,
       efectos TEXT NOT NULL,
-      contraindicaciones TEXT,
-      presentacion_id INTEGER,
+      categorias TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(nombre, presentacion_id),
-      FOREIGN KEY (presentacion_id) REFERENCES presentaciones(id) ON DELETE SET NULL
+      UNIQUE(nombre, activo)
     )
   `);
 
@@ -54,13 +34,10 @@ const init = async () => {
     CREATE TABLE IF NOT EXISTS sintoma_medicamento (
       sintoma_id INTEGER NOT NULL,
       medicamento_id INTEGER NOT NULL,
-      dosis_id INTEGER NOT NULL,
-      duracion TEXT NOT NULL,
       intensidad TEXT NOT NULL,
-      PRIMARY KEY (sintoma_id, medicamento_id, dosis_id, intensidad),
+      PRIMARY KEY (sintoma_id, medicamento_id, intensidad),
       FOREIGN KEY (sintoma_id) REFERENCES sintomas(id) ON DELETE CASCADE,
-      FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE,
-      FOREIGN KEY (dosis_id) REFERENCES dosis(id) ON DELETE CASCADE
+      FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
     )
   `);
 

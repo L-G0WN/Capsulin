@@ -8,1317 +8,196 @@ const {
     medPage,
     sintPage,
     relPage,
-    presPage,
-    dosisPage,
     medTotal,
     sintTotal,
     relTotal,
-    presTotal,
-    dosisTotal,
     medicamentos,
     sintomas,
-    relaciones,
-    presentaciones,
-    dosis,
+    relaciones
 } = await getPaginationData(url);
 ---
 
-<Layout
-    title="Lista de Base de Datos"
-    descripcion="Lista y edición de medicamentos, síntomas y relaciones"
->
+<Layout title="Lista de Base de Datos" descripcion="Lista y edición de medicamentos, síntomas y relaciones">
     <!-- Botones -->
     <div class="w-full flex flex-wrap justify-center gap-2 pt-4 mb-6">
-        <a
-            href="/"
-            class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm"
-        >
-            Ir a la página principal
-        </a>
-        <a
-            href="/admin/db"
-            class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm"
-        >
-            Ir a la base de datos
-        </a>
+        <a href="/" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm">Ir a la página principal</a>
+        <a href="/admin/db" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold text-sm">Ir a la base de datos</a>
     </div>
 
-    <main class="container mx-auto max-w-6xl px-2">
-        <h1
-            class="text-3xl font-extrabold mb-10 text-blue-800 text-center tracking-tight drop-shadow"
-        >
-            Panel de Registros
-        </h1>
-
-        <!-- Presentaciones y Dosis -->
-        <section>
-            <div class="flex flex-col md:flex-row gap-8">
-                <!-- Presentaciones -->
-                <div class="flex-1">
-                    <div
-                        class="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2"
-                    >
-                        <h2
-                            class="text-lg font-bold text-blue-700 flex items-center gap-2 mb-2 md:mb-0"
-                        >
-                            <svg
-                                class="w-6 h-6 text-blue-500"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                viewBox="0 0 24 24"
-                                ><circle cx="12" cy="12" r="10"></circle><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M8 12h8M12 8v8"></path></svg
-                            >
-                            Presentaciones
-                        </h2>
-                        <div class="relative w-full md:w-72">
-                            <input
-                                id="search-presentacion"
-                                type="text"
-                                placeholder="Buscar presentación..."
-                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                            />
-                            <span
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
-                            >
-                                <svg
-                                    class="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                    ><circle cx="11" cy="11" r="8"
-                                    ></circle><path d="M21 21l-4.35-4.35"
-                                    ></path></svg
-                                >
-                            </span>
-                        </div>
-                    </div>
-                    <div
-                        class="overflow-x-auto rounded-2xl shadow-lg mb-4 bg-white border border-blue-100"
-                    >
-                        <table class="min-w-full text-sm text-left">
-                            <thead
-                                class="bg-gradient-to-r from-blue-200 to-blue-100"
-                            >
-                                <tr>
-                                    <th
-                                        class="px-6 py-4 font-semibold text-blue-900"
-                                        >ID</th
-                                    >
-                                    <th
-                                        class="px-6 py-4 font-semibold text-blue-900"
-                                        >Presentación</th
-                                    >
-                                    <th
-                                        class="px-6 py-4 font-semibold text-blue-900 text-center"
-                                        >Acciones</th
-                                    >
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    presentaciones.length === 0 ? (
-                                        <tr>
-                                            <td
-                                                colspan="3"
-                                                class="text-center py-6 text-gray-400"
-                                            >
-                                                No hay presentaciones
-                                                registradas.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        presentaciones.map((p) => (
-                                            <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
-                                                <td class="px-6 py-4">
-                                                    {p.id}
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    {p.nombre}
-                                                </td>
-                                                <td class="px-6 py-4 space-x-2 text-center">
-                                                    <button
-                                                        class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-presentacion"
-                                                        data-id={p.id}
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                    <button
-                                                        class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-presentacion"
-                                                        data-id={p.id}
-                                                    >
-                                                        Eliminar
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Paginación presentaciones -->
-                    <div class="flex justify-center items-center gap-2 mb-8">
-                        <a
-                            href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage}&presPage=${presPage - 1 > 0 ? presPage - 1 : 1}&dosisPage=${dosisPage}`}
-                            class={`px-3 py-1 rounded ${presPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                            tabindex={presPage === 1 ? "-1" : "0"}
-                            aria-disabled={presPage === 1}>Anterior</a
-                        >
-                        <span class="px-2 text-sm">
-                            Página {presPage} de {
-                                Math.max(1, Math.ceil(presTotal / PAGE_SIZE))
-                            }
-                        </span>
-                        <a
-                            href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage}&presPage=${presPage + 1 <= Math.ceil(presTotal / PAGE_SIZE) ? presPage + 1 : presPage}&dosisPage=${dosisPage}`}
-                            class={`px-3 py-1 rounded ${presPage === Math.ceil(presTotal / PAGE_SIZE) || Math.ceil(presTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                            tabindex={presPage ===
-                                Math.ceil(presTotal / PAGE_SIZE) ||
-                            Math.ceil(presTotal / PAGE_SIZE) === 1
-                                ? "-1"
-                                : "0"}
-                            aria-disabled={presPage ===
-                                Math.ceil(presTotal / PAGE_SIZE) ||
-                                Math.ceil(presTotal / PAGE_SIZE) === 1}
-                            >Siguiente</a
-                        >
-                    </div>
-                </div>
-                <!-- Dosis -->
-                <div class="flex-1">
-                    <div
-                        class="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2"
-                    >
-                        <h2
-                            class="text-lg font-bold text-blue-700 flex items-center gap-2 mb-2 md:mb-0"
-                        >
-                            <svg
-                                class="w-6 h-6 text-blue-500"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                viewBox="0 0 24 24"
-                                ><circle cx="12" cy="12" r="10"></circle><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M8 12h8M12 8v8"></path></svg
-                            >
-                            Dosis
-                        </h2>
-                        <div class="relative w-full md:w-72">
-                            <input
-                                id="search-dosis"
-                                type="text"
-                                placeholder="Buscar dosis..."
-                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                            />
-                            <span
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
-                            >
-                                <svg
-                                    class="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                    ><circle cx="11" cy="11" r="8"
-                                    ></circle><path d="M21 21l-4.35-4.35"
-                                    ></path></svg
-                                >
-                            </span>
-                        </div>
-                    </div>
-                    <div
-                        class="overflow-x-auto rounded-2xl shadow-lg mb-4 bg-white border border-blue-100"
-                    >
-                        <table class="min-w-full text-sm text-left">
-                            <thead
-                                class="bg-gradient-to-r from-blue-200 to-blue-100"
-                            >
-                                <tr>
-                                    <th
-                                        class="px-6 py-4 font-semibold text-blue-900"
-                                        >ID</th
-                                    >
-                                    <th
-                                        class="px-6 py-4 font-semibold text-blue-900"
-                                        >Dosis</th
-                                    >
-                                    <th
-                                        class="px-6 py-4 font-semibold text-blue-900 text-center"
-                                        >Acciones</th
-                                    >
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    dosis.length === 0 ? (
-                                        <tr>
-                                            <td
-                                                colspan="3"
-                                                class="text-center py-6 text-gray-400"
-                                            >
-                                                No hay dosis registradas.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        dosis.map((d) => (
-                                            <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
-                                                <td class="px-6 py-4">
-                                                    {d.id}
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    {d.cantidad}
-                                                </td>
-                                                <td class="px-6 py-4 space-x-2 text-center">
-                                                    <button
-                                                        class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-dosis"
-                                                        data-id={d.id}
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                    <button
-                                                        class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-dosis"
-                                                        data-id={d.id}
-                                                    >
-                                                        Eliminar
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Paginación dosis -->
-                    <div class="flex justify-center items-center gap-2 mb-8">
-                        <a
-                            href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage}&presPage=${presPage}&dosisPage=${dosisPage - 1 > 0 ? dosisPage - 1 : 1}`}
-                            class={`px-3 py-1 rounded ${dosisPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                            tabindex={dosisPage === 1 ? "-1" : "0"}
-                            aria-disabled={dosisPage === 1}>Anterior</a
-                        >
-                        <span class="px-2 text-sm">
-                            Página {dosisPage} de {
-                                Math.max(1, Math.ceil(dosisTotal / PAGE_SIZE))
-                            }
-                        </span>
-                        <a
-                            href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage}&presPage=${presPage}&dosisPage=${dosisPage + 1 <= Math.ceil(dosisTotal / PAGE_SIZE) ? dosisPage + 1 : dosisPage}`}
-                            class={`px-3 py-1 rounded ${dosisPage === Math.ceil(dosisTotal / PAGE_SIZE) || Math.ceil(dosisTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                            tabindex={dosisPage ===
-                                Math.ceil(dosisTotal / PAGE_SIZE) ||
-                            Math.ceil(dosisTotal / PAGE_SIZE) === 1
-                                ? "-1"
-                                : "0"}
-                            aria-disabled={dosisPage ===
-                                Math.ceil(dosisTotal / PAGE_SIZE) ||
-                                Math.ceil(dosisTotal / PAGE_SIZE) === 1}
-                            >Siguiente</a
-                        >
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Medicamentos -->
-        <section>
-            <div
-                class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2"
-            >
-                <h2
-                    class="text-xl font-bold text-blue-700 flex items-center gap-2"
-                >
-                    <svg
-                        class="w-6 h-6 text-blue-500"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"
-                        ></path><circle cx="9" cy="7" r="4"></circle></svg
-                    >
-                    Medicamentos
-                </h2>
-                <div class="relative w-full md:w-72">
-                    <input
-                        id="search-medicamento"
-                        type="text"
-                        placeholder="Buscar medicamento..."
-                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                    />
-                    <span
-                        class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
-                    >
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            ><circle cx="11" cy="11" r="8"></circle><path
-                                d="M21 21l-4.35-4.35"></path></svg
-                        >
-                    </span>
-                </div>
-            </div>
-            <div
-                class="overflow-x-auto rounded-2xl shadow-lg mb-4 bg-white border border-blue-100"
-            >
-                <table
-                    id="table-medicamento"
-                    class="min-w-full text-sm text-left"
-                >
-                    <thead class="bg-gradient-to-r from-blue-200 to-blue-100">
-                        <tr>
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >ID</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Nombre</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Efectos</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Presentación</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Contraindicaciones</th
-                            >
-                            <th
-                                class="px-6 py-4 text-center font-semibold text-blue-900"
-                                >Acciones</th
-                            >
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            medicamentos.length === 0 ? (
-                                <tr>
-                                    <td
-                                        colspan="6"
-                                        class="text-center py-6 text-gray-400"
-                                    >
-                                        No hay medicamentos registrados.
-                                    </td>
-                                </tr>
-                            ) : (
-                                medicamentos.map((m) => (
-                                    <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
-                                        <td class="px-6 py-4">{m.id}</td>
-                                        <td class="px-6 py-4">{m.nombre}</td>
-                                        <td class="px-6 py-4">{m.efectos}</td>
-                                        <td class="px-6 py-4">
-                                            {m.presentacion}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {m.contraindicaciones}
-                                        </td>
-                                        <td class="px-6 py-4 space-x-2 text-center">
-                                            <button
-                                                class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-medicamento"
-                                                data-id={m.id}
-                                            >
-                                                Editar
-                                            </button>
-                                            <button
-                                                class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-medicamento"
-                                                data-id={m.id}
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <!-- Paginación medicamentos -->
-            <div class="flex justify-center items-center gap-2 mb-8">
-                <a
-                    href={`?medPage=${medPage - 1 > 0 ? medPage - 1 : 1}&sintPage=${sintPage}&relPage=${relPage}&presPage=${presPage}&dosisPage=${dosisPage}`}
-                    class={`px-3 py-1 rounded ${medPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                    tabindex={medPage === 1 ? "-1" : "0"}
-                    aria-disabled={medPage === 1}>Anterior</a
-                >
-                <span class="px-2 text-sm">
-                    Página {medPage} de {
-                        Math.max(1, Math.ceil(medTotal / PAGE_SIZE))
-                    }
-                </span>
-                <a
-                    href={`?medPage=${medPage + 1 <= Math.ceil(medTotal / PAGE_SIZE) ? medPage + 1 : medPage}&sintPage=${sintPage}&relPage=${relPage}&presPage=${presPage}&dosisPage=${dosisPage}`}
-                    class={`px-3 py-1 rounded ${medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                    tabindex={medPage === Math.ceil(medTotal / PAGE_SIZE) ||
-                    Math.ceil(medTotal / PAGE_SIZE) === 1
-                        ? "-1"
-                        : "0"}
-                    aria-disabled={medPage ===
-                        Math.ceil(medTotal / PAGE_SIZE) ||
-                        Math.ceil(medTotal / PAGE_SIZE) === 1}>Siguiente</a
-                >
-            </div>
-        </section>
-
+    <main class="container mx-auto max-w-6xl px-2 pb-8">
+        <h1 class="text-2xl font-extrabold mb-6 text-blue-800 text-center">Panel de Registros</h1>
+    
         <!-- Síntomas -->
         <section>
-            <div
-                class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2"
-            >
-                <h2
-                    class="text-xl font-bold text-blue-700 flex items-center gap-2"
-                >
-                    <svg
-                        class="w-6 h-6 text-blue-500"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"
-                        ></path><circle cx="9" cy="7" r="4"></circle></svg
-                    >
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+                <h2 class="text-lg font-bold text-blue-700 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Síntomas
                 </h2>
                 <div class="relative w-full md:w-72">
-                    <input
-                        id="search-sintoma"
-                        type="text"
-                        placeholder="Buscar síntoma..."
-                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                    />
-                    <span
-                        class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
-                    >
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            ><circle cx="11" cy="11" r="8"></circle><path
-                                d="M21 21l-4.35-4.35"></path></svg
-                        >
+                    <input id="search-sintoma" type="text" placeholder="Buscar síntoma..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
                     </span>
                 </div>
             </div>
-            <div
-                class="overflow-x-auto rounded-2xl shadow-lg mb-4 bg-white border border-blue-100"
-            >
+            <div class="overflow-x-auto rounded-2xl shadow-lg mb-4 bg-white border border-blue-100">
                 <table id="table-sintoma" class="min-w-full text-sm text-left">
                     <thead class="bg-gradient-to-r from-blue-200 to-blue-100">
                         <tr>
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >ID</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Título</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Descripción</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Recomendación</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Emergencia</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Categoría</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Frecuencia</th
-                            >
-                            <th
-                                class="px-6 py-4 text-center font-semibold text-blue-900"
-                                >Acciones</th
-                            >
+                            <th class="px-6 py-4 font-semibold text-blue-900">ID</th>
+                            <th class="px-6 py-4 font-semibold text-blue-900">Nombre</th>
+                            <th class="px-6 py-4 font-semibold text-blue-900">Descripción</th>
+                            <th class="px-6 py-4 text-center font-semibold text-blue-900">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            sintomas.length === 0 ? (
-                                <tr>
-                                    <td
-                                        colspan="8"
-                                        class="text-center py-6 text-gray-400"
-                                    >
-                                        No hay síntomas registrados.
-                                    </td>
-                                </tr>
-                            ) : (
-                                sintomas.map((s) => (
-                                    <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
-                                        <td class="px-6 py-4">{s.id}</td>
-                                        <td class="px-6 py-4">{s.titulo}</td>
-                                        <td class="px-6 py-4">
-                                            {s.descripcion}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {s.recomendacion}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {s.emergencia}
-                                        </td>
-                                        <td class="px-6 py-4">{s.categoria}</td>
-                                        <td class="px-6 py-4">
-                                            {s.frecuencia}
-                                        </td>
-                                        <td class="px-6 py-4 space-x-2 text-center">
-                                            <button
-                                                class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-sintoma"
-                                                data-id={s.id}
-                                            >
-                                                Editar
-                                            </button>
-                                            <button
-                                                class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-sintoma"
-                                                data-id={s.id}
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )
-                        }
+                        {sintomas.length === 0 ? (
+                        <tr>
+                            <td colspan="8" class="text-center py-6 text-gray-400">No hay síntomas registrados.</td>
+                        </tr>
+                    ) : (
+                        sintomas.map((s) => (
+                            <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
+                                <td class="px-6 py-4">{s.id}</td>
+                                <td class="px-6 py-4">{s.nombre}</td>
+                                <td class="px-6 py-4">{s.descripcion}</td>
+                                <td class="px-6 py-4 space-x-2 text-center">
+                                    <button class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-sintoma" data-id={s.id}>Editar</button>
+                                    <button class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-sintoma" data-id={s.id}>Eliminar</button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
                     </tbody>
                 </table>
             </div>
             <!-- Paginación síntomas -->
             <div class="flex justify-center items-center gap-2 mb-8">
-                <a
-                    href={`?medPage=${medPage}&sintPage=${sintPage - 1 > 0 ? sintPage - 1 : 1}&relPage=${relPage}&presPage=${presPage}&dosisPage=${dosisPage}`}
-                    class={`px-3 py-1 rounded ${sintPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                    tabindex={sintPage === 1 ? "-1" : "0"}
-                    aria-disabled={sintPage === 1}>Anterior</a
-                >
-                <span class="px-2 text-sm">
-                    Página {sintPage} de {
-                        Math.max(1, Math.ceil(sintTotal / PAGE_SIZE))
-                    }
+                <a href={`?medPage=${medPage}&sintPage=${sintPage - 1 > 0 ? sintPage - 1 : 1}&relPage=${relPage}`} class={`px-3 py-1 rounded ${sintPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={sintPage === 1 ? "-1" : "0"} aria-disabled={sintPage === 1}>Anterior</a>
+                <span class="px-2 text-sm">Página {sintPage} de {Math.max(1, Math.ceil(sintTotal / PAGE_SIZE))}</span>
+                <a href={`?medPage=${medPage}&sintPage=${sintPage + 1 <= Math.ceil(sintTotal / PAGE_SIZE) ? sintPage + 1 : sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1}>Siguiente</a>
+            </div>
+        </section>
+
+        <!-- Medicamentos -->
+        <section>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+            <h2 class="text-lg font-bold text-blue-700 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                Medicamentos
+            </h2>
+            <div class="relative w-full md:w-72">
+                <input id="search-medicamento" type="text" placeholder="Buscar medicamento..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
                 </span>
-                <a
-                    href={`?medPage=${medPage}&sintPage=${sintPage + 1 <= Math.ceil(sintTotal / PAGE_SIZE) ? sintPage + 1 : sintPage}&relPage=${relPage}&presPage=${presPage}&dosisPage=${dosisPage}`}
-                    class={`px-3 py-1 rounded ${sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                    tabindex={sintPage === Math.ceil(sintTotal / PAGE_SIZE) ||
-                    Math.ceil(sintTotal / PAGE_SIZE) === 1
-                        ? "-1"
-                        : "0"}
-                    aria-disabled={sintPage ===
-                        Math.ceil(sintTotal / PAGE_SIZE) ||
-                        Math.ceil(sintTotal / PAGE_SIZE) === 1}>Siguiente</a
-                >
+            </div>
+            </div>
+            <div class="overflow-x-auto rounded-2xl shadow-lg mb-4 bg-white border border-blue-100">
+            <table id="table-medicamento" class="min-w-full text-sm text-left">
+                <thead class="bg-gradient-to-r from-blue-200 to-blue-100">
+                <tr>
+                    <th class="px-6 py-4 font-semibold text-blue-900">ID</th>
+                    <th class="px-6 py-4 font-semibold text-blue-900">Nombre</th>
+                    <th class="px-6 py-4 font-semibold text-blue-900">Activo</th>
+                    <th class="px-6 py-4 font-semibold text-blue-900">Efectos</th>
+                    <th class="px-6 py-4 font-semibold text-blue-900">Categorias</th>
+                    <th class="px-6 py-4 text-center font-semibold text-blue-900">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {medicamentos.length === 0 ? (
+                    <tr>
+                    <td colspan="6" class="text-center py-6 text-gray-400">No hay medicamentos registrados.</td>
+                    </tr>
+                ) : (
+                    medicamentos.map((m) => (
+                    <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
+                        <td class="px-6 py-4">{m.id}</td>
+                        <td class="px-6 py-4">{m.nombre}</td>
+                        <td class="px-6 py-4">{m.activo}</td>
+                        <td class="px-6 py-4">{m.efectos}</td>
+                        <td class="px-6 py-4">{m.categorias}</td>
+                        <td class="px-6 py-4 space-x-2 text-center">
+                        <button class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-medicamento" data-id={m.id}>Editar</button>
+                        <button class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-medicamento" data-id={m.id}>Eliminar</button>
+                        </td>
+                    </tr>
+                    ))
+                )}
+                </tbody>
+            </table>
+            </div>
+            <!-- Paginación medicamentos -->
+            <div class="flex justify-center items-center gap-2 mb-8">
+                <a href={`?medPage=${medPage - 1 > 0 ? medPage - 1 : 1}&sintPage=${sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${medPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={medPage === 1 ? "-1" : "0"} aria-disabled={medPage === 1}>Anterior</a>
+                <span class="px-2 text-sm">Página {medPage} de {Math.max(1, Math.ceil(medTotal / PAGE_SIZE))}</span>
+                <a href={`?medPage=${medPage + 1 <= Math.ceil(medTotal / PAGE_SIZE) ? medPage + 1 : medPage}&sintPage=${sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1}>Siguiente</a>
             </div>
         </section>
 
         <!-- Relaciones -->
         <section>
-            <div
-                class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2"
-            >
-                <h2
-                    class="text-xl font-bold text-blue-700 flex items-center gap-2"
-                >
-                    <svg
-                        class="w-6 h-6 text-blue-500"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M8 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"
-                        ></path><circle cx="9" cy="7" r="4"></circle></svg
-                    >
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+                <h2 class="text-lg font-bold text-blue-700 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Relaciones Síntoma-Medicamento
                 </h2>
                 <div class="relative w-full md:w-72">
-                    <input
-                        id="search-relacion"
-                        type="text"
-                        placeholder="Buscar relación..."
-                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                    />
-                    <span
-                        class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
-                    >
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            ><circle cx="11" cy="11" r="8"></circle><path
-                                d="M21 21l-4.35-4.35"></path></svg
-                        >
+                    <input id="search-relacion" type="text" placeholder="Buscar relación..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
                     </span>
                 </div>
             </div>
-            <div
-                class="overflow-x-auto rounded-2xl shadow-lg mb-10 bg-white border border-blue-100"
-            >
+            <div class="overflow-x-auto rounded-2xl shadow-lg mb-10 bg-white border border-blue-100">
                 <table id="table-relacion" class="min-w-full text-sm text-left">
                     <thead class="bg-gradient-to-r from-blue-200 to-blue-100">
                         <tr>
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Síntoma</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Medicamento</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Dosis</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Duración</th
-                            >
-                            <th class="px-6 py-4 font-semibold text-blue-900"
-                                >Intensidad</th
-                            >
-                            <th
-                                class="px-6 py-4 text-center font-semibold text-blue-900"
-                                >Acciones</th
-                            >
+                            <th class="px-6 py-4 font-semibold text-blue-900">Síntoma</th>
+                            <th class="px-6 py-4 font-semibold text-blue-900">Medicamento</th>
+                            <th class="px-6 py-4 font-semibold text-blue-900">Intensidad</th>
+                            <th class="px-6 py-4 text-center font-semibold text-blue-900">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            relaciones.length === 0 ? (
-                                <tr>
-                                    <td
-                                        colspan="6"
-                                        class="text-center py-6 text-gray-400"
-                                    >
-                                        No hay relaciones registradas.
+                        {relaciones.length === 0 ? (
+                            <tr>
+                                <td colspan="6" class="text-center py-6 text-gray-400">No hay relaciones registradas.</td>
+                            </tr>
+                        ) : (
+                            relaciones.map((r) => (
+                                <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
+                                    <td class="px-6 py-4">{r.sintoma}</td>
+                                    <td class="px-6 py-4">{r.medicamento}</td>
+                                    <td class="px-6 py-4">{r.intensidad}</td>
+                                    <td class="px-6 py-4 space-x-2 text-center">
+                                        <button class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-relacion"
+                                            data-sid={r.sintoma_id}
+                                            data-mid={r.medicamento_id}
+                                            data-intensidad={r.intensidad}>
+                                            Editar
+                                        </button>
+                                        <button class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-relacion"
+                                            data-sid={r.sintoma_id}
+                                            data-mid={r.medicamento_id}
+                                            data-intensidad={r.intensidad}>
+                                            Eliminar
+                                        </button>
                                     </td>
                                 </tr>
-                            ) : (
-                                relaciones.map((r) => (
-                                    <tr class="border-b last:border-b-0 hover:bg-blue-50 transition">
-                                        <td class="px-6 py-4">{r.sintoma}</td>
-                                        <td class="px-6 py-4">
-                                            {r.medicamento}
-                                        </td>
-                                        <td class="px-6 py-4">{r.dosis}</td>
-                                        <td class="px-6 py-4">{r.duracion}</td>
-                                        <td class="px-6 py-4">
-                                            {r.intensidad}
-                                        </td>
-                                        <td class="px-6 py-4 space-x-2 text-center">
-                                            <button
-                                                class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-yellow-400 text-white hover:bg-yellow-500 edit-relacion"
-                                                data-sid={r.sintoma_id}
-                                                data-mid={r.medicamento_id}
-                                                data-dosis={r.dosis}
-                                                data-intensidad={r.intensidad}
-                                            >
-                                                Editar
-                                            </button>
-                                            <button
-                                                class="px-3 py-1 rounded-lg font-semibold text-xs shadow bg-red-600 text-white hover:bg-red-700 delete-relacion"
-                                                data-sid={r.sintoma_id}
-                                                data-mid={r.medicamento_id}
-                                                data-dosis={r.dosis}
-                                                data-intensidad={r.intensidad}
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )
-                        }
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
             <!-- Paginación relaciones -->
             <div class="flex justify-center items-center gap-2 mb-8">
-                <a
-                    href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage - 1 > 0 ? relPage - 1 : 1}&presPage=${presPage}&dosisPage=${dosisPage}`}
-                    class={`px-3 py-1 rounded ${relPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                    tabindex={relPage === 1 ? "-1" : "0"}
-                    aria-disabled={relPage === 1}>Anterior</a
-                >
-                <span class="px-2 text-sm">
-                    Página {relPage} de {
-                        Math.max(1, Math.ceil(relTotal / PAGE_SIZE))
-                    }
-                </span>
-                <a
-                    href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage + 1 <= Math.ceil(relTotal / PAGE_SIZE) ? relPage + 1 : relPage}&presPage=${presPage}&dosisPage=${dosisPage}`}
-                    class={`px-3 py-1 rounded ${relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                    tabindex={relPage === Math.ceil(relTotal / PAGE_SIZE) ||
-                    Math.ceil(relTotal / PAGE_SIZE) === 1
-                        ? "-1"
-                        : "0"}
-                    aria-disabled={relPage ===
-                        Math.ceil(relTotal / PAGE_SIZE) ||
-                        Math.ceil(relTotal / PAGE_SIZE) === 1}>Siguiente</a
-                >
+                <a href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage - 1 > 0 ? relPage - 1 : 1}`} class={`px-3 py-1 rounded ${relPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={relPage === 1 ? "-1" : "0"} aria-disabled={relPage === 1}>Anterior</a>
+                <span class="px-2 text-sm">Página {relPage} de {Math.max(1, Math.ceil(relTotal / PAGE_SIZE))}</span>
+                <a href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage + 1 <= Math.ceil(relTotal / PAGE_SIZE) ? relPage + 1 : relPage}`} class={`px-3 py-1 rounded ${relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1}>Siguiente</a>
             </div>
         </section>
-
-        <div id="edit-modal-root"></div>
     </main>
-
-    <script type="module">
-        // Modal dinámico
-        function showEditModal({ title, fields, initialData, onSave }) {
-            const root = document.getElementById("edit-modal-root");
-            root.innerHTML = "";
-
-            // Renderiza campos tipo select o input según la definición del campo
-            const renderField = (field) => {
-                if (field.type === "select" && Array.isArray(field.options)) {
-                    const optionsHtml = field.options
-                        .map(
-                            (opt) =>
-                                `<option value="${opt.value}"${
-                                    initialData[field.name] == opt.value
-                                        ? " selected"
-                                        : ""
-                                }>${opt.label}</option>`,
-                        )
-                        .join("");
-                    return `
-                <div>
-                    <label class="block mb-1 font-semibold text-blue-900" for="${field.name}">${field.label}</label>
-                    <select
-                        id="${field.name}"
-                        name="${field.name}"
-                        ${field.required ? "required" : ""}
-                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                    >
-                        ${optionsHtml}
-                    </select>
-                </div>
-            `;
-                } else {
-                    return `
-                <div>
-                    <label class="block mb-1 font-semibold text-blue-900" for="${field.name}">${field.label}</label>
-                    <input
-                        id="${field.name}"
-                        name="${field.name}"
-                        type="${field.type || "text"}"
-                        value="${initialData[field.name] || ""}"
-                        ${field.required ? "required" : ""}
-                        class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                    />
-                </div>
-            `;
-                }
-            };
-
-            const modal = document.createElement("div");
-            modal.innerHTML = `
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative">
-                <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl" id="close-modal">&times;</button>
-                <h2 class="text-xl font-bold mb-6 text-blue-700">${title}</h2>
-                <form id="modal-edit-form" class="space-y-4">
-                    ${fields.map(renderField).join("")}
-                    <div class="flex gap-2 pt-2">
-                        <button type="button" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold transition" id="cancel-modal">Cancelar</button>
-                        <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition">Guardar</button>
-                    </div>
-                </form>
-                <div id="modal-edit-msg" class="mt-3 text-sm text-center"></div>
-            </div>
-        </div>
-    `;
-            root.appendChild(modal);
-
-            modal.querySelector("#close-modal").onclick = () =>
-                (root.innerHTML = "");
-            modal.querySelector("#cancel-modal").onclick = (e) => {
-                e.preventDefault();
-                root.innerHTML = "";
-            };
-
-            modal.querySelector("#modal-edit-form").onsubmit = async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = {};
-                fields.forEach((f) => (data[f.name] = formData.get(f.name)));
-                try {
-                    await onSave(data);
-                } catch (err) {
-                    modal.querySelector("#modal-edit-msg").textContent =
-                        "Error al editar";
-                }
-            };
-        }
-
-        // Conecta los botones de editar con el modal y define los campos
-        document.addEventListener("DOMContentLoaded", () => {
-            // Presentaciones
-            document.querySelectorAll(".edit-presentacion").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    showEditModal({
-                        title: "Editar Presentación",
-                        fields: [
-                            { name: "nombre", label: "Nombre", required: true },
-                        ],
-                        initialData: {
-                            nombre: btn
-                                .closest("tr")
-                                .querySelector("td:nth-child(2)")
-                                .textContent.trim(),
-                        },
-                        onSave: async (data) => {
-                            const id = btn.dataset.id;
-                            const res = await fetch(
-                                `/api/v1/presentaciones?id=${id}`,
-                                {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(data),
-                                },
-                            );
-                            if (res.ok) location.reload();
-                            else
-                                document.getElementById(
-                                    "modal-edit-msg",
-                                ).textContent = "Error al editar";
-                        },
-                    });
-                });
-            });
-
-            // Dosis
-            document.querySelectorAll(".edit-dosis").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    showEditModal({
-                        title: "Editar Dosis",
-                        fields: [
-                            {
-                                name: "cantidad",
-                                label: "Cantidad",
-                                required: true,
-                            },
-                        ],
-                        initialData: {
-                            cantidad: btn
-                                .closest("tr")
-                                .querySelector("td:nth-child(2)")
-                                .textContent.trim(),
-                        },
-                        onSave: async (data) => {
-                            const id = btn.dataset.id;
-                            const res = await fetch(`/api/v1/dosis?id=${id}`, {
-                                method: "PUT",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(data),
-                            });
-                            if (res.ok) location.reload();
-                            else
-                                document.getElementById(
-                                    "modal-edit-msg",
-                                ).textContent = "Error al editar";
-                        },
-                    });
-                });
-            });
-
-            // Medicamentos
-            document.querySelectorAll(".edit-medicamento").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    const tr = btn.closest("tr");
-                    showEditModal({
-                        title: "Editar Medicamento",
-                        fields: [
-                            { name: "nombre", label: "Nombre", required: true },
-                            {
-                                name: "efectos",
-                                label: "Efectos",
-                                required: true,
-                            },
-                            {
-                                name: "presentacion",
-                                label: "Presentación",
-                                required: true,
-                                type: "select",
-                                options: Array.from(
-                                    document.querySelectorAll(
-                                        ".edit-presentacion",
-                                    ),
-                                ).map((rowBtn) => ({
-                                    value: rowBtn.dataset.id,
-                                    label: rowBtn
-                                        .closest("tr")
-                                        .querySelector("td:nth-child(2)")
-                                        .textContent.trim(),
-                                })),
-                            },
-                            {
-                                name: "contraindicaciones",
-                                label: "Contraindicaciones",
-                                required: false,
-                            },
-                        ],
-                        initialData: {
-                            nombre: tr
-                                .querySelector("td:nth-child(2)")
-                                .textContent.trim(),
-                            efectos: tr
-                                .querySelector("td:nth-child(3)")
-                                .textContent.trim(),
-                            presentacion: tr
-                                .querySelector("td:nth-child(4)")
-                                .textContent.trim(),
-                            contraindicaciones: tr
-                                .querySelector("td:nth-child(5)")
-                                .textContent.trim(),
-                        },
-                        onSave: async (data) => {
-                            const id = btn.dataset.id;
-                            const res = await fetch(
-                                `/api/v1/medicamentos?id=${id}`,
-                                {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(data),
-                                },
-                            );
-                            if (res.ok) location.reload();
-                            else
-                                document.getElementById(
-                                    "modal-edit-msg",
-                                ).textContent = "Error al editar";
-                        },
-                    });
-                });
-            });
-
-            // Síntomas
-            document.querySelectorAll(".edit-sintoma").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    const tr = btn.closest("tr");
-                    showEditModal({
-                        title: "Editar Síntoma",
-                        fields: [
-                            { name: "titulo", label: "Título", required: true },
-                            {
-                                name: "descripcion",
-                                label: "Descripción",
-                                required: true,
-                            },
-                            {
-                                name: "recomendacion",
-                                label: "Recomendación",
-                                required: true,
-                            },
-                            {
-                                name: "emergencia",
-                                label: "Emergencia",
-                                required: true,
-                            },
-                            {
-                                name: "categoria",
-                                label: "Categoría",
-                                required: false,
-                            },
-                            {
-                                name: "frecuencia",
-                                label: "Frecuencia",
-                                required: false,
-                            },
-                        ],
-                        initialData: {
-                            titulo: tr
-                                .querySelector("td:nth-child(2)")
-                                .textContent.trim(),
-                            descripcion: tr
-                                .querySelector("td:nth-child(3)")
-                                .textContent.trim(),
-                            recomendacion: tr
-                                .querySelector("td:nth-child(4)")
-                                .textContent.trim(),
-                            emergencia: tr
-                                .querySelector("td:nth-child(5)")
-                                .textContent.trim(),
-                            categoria: tr
-                                .querySelector("td:nth-child(6)")
-                                .textContent.trim(),
-                            frecuencia: tr
-                                .querySelector("td:nth-child(7)")
-                                .textContent.trim(),
-                        },
-                        onSave: async (data) => {
-                            const id = btn.dataset.id;
-                            const res = await fetch(
-                                `/api/v1/sintomas?id=${id}`,
-                                {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(data),
-                                },
-                            );
-                            if (res.ok) location.reload();
-                            else
-                                document.getElementById(
-                                    "modal-edit-msg",
-                                ).textContent = "Error al editar";
-                        },
-                    });
-                });
-            });
-
-            // Relaciones
-            document.querySelectorAll(".edit-relacion").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    const tr = btn.closest("tr");
-                    showEditModal({
-                        title: "Editar Relación",
-                        fields: [
-                            {
-                                name: "dosis",
-                                label: "Dosis",
-                                required: true,
-                                type: "select",
-                                options: Array.from(
-                                    document.querySelectorAll(".edit-dosis"),
-                                ).map((rowBtn) => ({
-                                    value: rowBtn
-                                        .closest("tr")
-                                        .querySelector("td:nth-child(2)")
-                                        .textContent.trim(),
-                                    label: rowBtn
-                                        .closest("tr")
-                                        .querySelector("td:nth-child(2)")
-                                        .textContent.trim(),
-                                })),
-                            },
-                            {
-                                name: "duracion",
-                                label: "Duración",
-                                required: true,
-                            },
-                            {
-                                name: "intensidad",
-                                label: "Intensidad",
-                                required: true,
-                                type: "select",
-                                options: [
-                                    { value: "Normal", label: "Normal" },
-                                    { value: "Medio", label: "Medio" },
-                                    {
-                                        value: "Muy Fuerte",
-                                        label: "Muy Fuerte",
-                                    },
-                                ],
-                            },
-                        ],
-                        initialData: {
-                            dosis: tr
-                                .querySelector("td:nth-child(3)")
-                                .textContent.trim(),
-                            duracion: tr
-                                .querySelector("td:nth-child(4)")
-                                .textContent.trim(),
-                            intensidad: tr
-                                .querySelector("td:nth-child(5)")
-                                .textContent.trim(),
-                        },
-                        onSave: async (data) => {
-                            const sid = btn.dataset.sid;
-                            const mid = btn.dataset.mid;
-                            const dosis = encodeURIComponent(btn.dataset.dosis);
-                            const intensidad = encodeURIComponent(
-                                btn.dataset.intensidad,
-                            );
-                            const res = await fetch(
-                                `/api/v1/relacion?sintoma_id=${sid}&medicamento_id=${mid}&dosis=${dosis}&intensidad=${intensidad}`,
-                                {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(data),
-                                },
-                            );
-                            if (res.ok) location.reload();
-                            else
-                                document.getElementById(
-                                    "modal-edit-msg",
-                                ).textContent = "Error al editar";
-                        },
-                    });
-                });
-            });
-        });
-    </script>
-
-    <script type="module">
-        // Filtro de búsqueda para presentaciones
-        document
-            .getElementById("search-presentacion")
-            .addEventListener("input", function () {
-                const value = this.value.toLowerCase();
-                document
-                    .querySelectorAll("#table-presentaciones tbody tr")
-                    .forEach((row) => {
-                        row.style.display = Array.from(row.children).some(
-                            (td) =>
-                                td.textContent.toLowerCase().includes(value),
-                        )
-                            ? ""
-                            : "none";
-                    });
-            });
-        // Filtro de búsqueda para dosis
-        document
-            .getElementById("search-dosis")
-            .addEventListener("input", function () {
-                const value = this.value.toLowerCase();
-                document
-                    .querySelectorAll("#table-dosis tbody tr")
-                    .forEach((row) => {
-                        row.style.display = Array.from(row.children).some(
-                            (td) =>
-                                td.textContent.toLowerCase().includes(value),
-                        )
-                            ? ""
-                            : "none";
-                    });
-            });
-        // Filtro de búsqueda para medicamentos
-        document
-            .getElementById("search-medicamento")
-            .addEventListener("input", function () {
-                const value = this.value.toLowerCase();
-                document
-                    .querySelectorAll("#table-medicamento tbody tr")
-                    .forEach((row) => {
-                        row.style.display = Array.from(row.children).some(
-                            (td) =>
-                                td.textContent.toLowerCase().includes(value),
-                        )
-                            ? ""
-                            : "none";
-                    });
-            });
-        // Filtro de búsqueda para síntomas
-        document
-            .getElementById("search-sintoma")
-            .addEventListener("input", function () {
-                const value = this.value.toLowerCase();
-                document
-                    .querySelectorAll("#table-sintoma tbody tr")
-                    .forEach((row) => {
-                        row.style.display = Array.from(row.children).some(
-                            (td) =>
-                                td.textContent.toLowerCase().includes(value),
-                        )
-                            ? ""
-                            : "none";
-                    });
-            });
-        // Filtro de búsqueda para relaciones
-        document
-            .getElementById("search-relacion")
-            .addEventListener("input", function () {
-                const value = this.value.toLowerCase();
-                document
-                    .querySelectorAll("#table-relacion tbody tr")
-                    .forEach((row) => {
-                        row.style.display = Array.from(row.children).some(
-                            (td) =>
-                                td.textContent.toLowerCase().includes(value),
-                        )
-                            ? ""
-                            : "none";
-                    });
-            });
-
-        // Eliminar presentaciones
-        document.querySelectorAll(".delete-presentacion").forEach((btn) => {
-            btn.addEventListener("click", async () => {
-                if (!confirm("¿Eliminar esta presentación?")) return;
-                const id = btn.dataset.id;
-                const res = await fetch(`/api/v1/presentaciones?id=${id}`, {
-                    method: "DELETE",
-                });
-                if (res.ok) location.reload();
-                else alert("Error al eliminar");
-            });
-        });
-
-        // Eliminar dosis
-        document.querySelectorAll(".delete-dosis").forEach((btn) => {
-            btn.addEventListener("click", async () => {
-                if (!confirm("¿Eliminar esta dosis?")) return;
-                const id = btn.dataset.id;
-                const res = await fetch(`/api/v1/dosis?id=${id}`, {
-                    method: "DELETE",
-                });
-                if (res.ok) location.reload();
-                else alert("Error al eliminar");
-            });
-        });
-
-        // Eliminar medicamento
-        document.querySelectorAll(".delete-medicamento").forEach((btn) => {
-            btn.addEventListener("click", async () => {
-                if (!confirm("¿Eliminar este medicamento?")) return;
-                const id = btn.dataset.id;
-                const res = await fetch(`/api/v1/medicamentos?id=${id}`, {
-                    method: "DELETE",
-                });
-                if (res.ok) location.reload();
-                else alert("Error al eliminar");
-            });
-        });
-        // Eliminar síntoma
-        document.querySelectorAll(".delete-sintoma").forEach((btn) => {
-            btn.addEventListener("click", async () => {
-                if (!confirm("¿Eliminar este síntoma?")) return;
-                const id = btn.dataset.id;
-                const res = await fetch(`/api/v1/sintomas?id=${id}`, {
-                    method: "DELETE",
-                });
-                if (res.ok) location.reload();
-                else alert("Error al eliminar");
-            });
-        });
-        // Eliminar relación
-        document.querySelectorAll(".delete-relacion").forEach((btn) => {
-            btn.addEventListener("click", async () => {
-                if (!confirm("¿Eliminar esta relación?")) return;
-                const sid = btn.dataset.sid;
-                const mid = btn.dataset.mid;
-                const dosis = encodeURIComponent(btn.dataset.dosis);
-                const intensidad = encodeURIComponent(btn.dataset.intensidad);
-                const res = await fetch(
-                    `/api/v1/relacion?sintoma_id=${sid}&medicamento_id=${mid}&dosis=${dosis}&intensidad=${intensidad}`,
-                    { method: "DELETE" },
-                );
-                if (res.ok) location.reload();
-                else alert("Error al eliminar");
-            });
-        });
-    </script>
 </Layout>

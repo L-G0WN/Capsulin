@@ -4,46 +4,30 @@ import type { APIRoute } from "astro";
 export const POST: APIRoute = async ({ request }) => {
     const data = await request.json();
 
-    if (!data.titulo || typeof data.titulo !== "string" || data.titulo.trim().length < 2) {
-        return new Response(JSON.stringify({ ok: false, error: "Título es requerido y debe tener al menos 2 caracteres." }), { status: 400 });
+    if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 5) {
+        return new Response(JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 5 caracteres." }), { status: 400 });
     }
-    if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 2) {
-        return new Response(JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 2 caracteres." }), { status: 400 });
-    }
-    if (!data.recomendacion || typeof data.recomendacion !== "string" || data.recomendacion.trim().length < 2) {
-        return new Response(JSON.stringify({ ok: false, error: "Recomendación es requerida y debe tener al menos 2 caracteres." }), { status: 400 });
-    }
-    if (!data.emergencia || typeof data.emergencia !== "string" || data.emergencia.trim().length < 1) {
-        return new Response(JSON.stringify({ ok: false, error: "Emergencia es requerida." }), { status: 400 });
-    }
-    if (data.categoria && typeof data.categoria !== "string") {
-        return new Response(JSON.stringify({ ok: false, error: "Categoría debe ser texto." }), { status: 400 });
-    }
-    if (data.frecuencia && typeof data.frecuencia !== "string") {
-        return new Response(JSON.stringify({ ok: false, error: "Frecuencia debe ser texto." }), { status: 400 });
+    if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 5) {
+        return new Response(JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 5 caracteres." }), { status: 400 });
     }
 
     const db = await getDb();
     try {
         const existe = await db.get(
-            "SELECT id FROM sintomas WHERE titulo = ?",
-            data.titulo.trim()
+            "SELECT id FROM sintomas WHERE nombre = ?",
+            data.nombre.trim()
         );
         if (existe) {
             await db.close();
-            return new Response(JSON.stringify({ ok: false, error: "Ya existe un síntoma con ese título." }), { status: 409 });
+            return new Response(JSON.stringify({ ok: false, error: "Ya existe un síntoma con ese nombre." }), { status: 409 });
         }
 
         await db.run(
-            `INSERT INTO sintomas (titulo, descripcion, recomendacion, emergencia, categoria, frecuencia)
-             VALUES (?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO sintomas (nombre, descripcion)
+             VALUES (?, ?)`,
             [
-                data.titulo.trim(),
+                data.nombre.trim(),
                 data.descripcion.trim(),
-                data.recomendacion.trim(),
-                data.emergencia.trim(),
-                data.categoria ? data.categoria.trim() : null,
-                data.frecuencia ? data.frecuencia.trim() : null,
             ]
         );
         await db.close();
@@ -61,7 +45,6 @@ export const PUT: APIRoute = async ({ request }) => {
         const id = url.searchParams.get("id");
         const data = await request.json();
 
-        // Validaciones
         if (!id) {
             await db.close();
             return new Response(
@@ -69,45 +52,17 @@ export const PUT: APIRoute = async ({ request }) => {
                 { status: 400 }
             );
         }
-        if (!data.titulo || typeof data.titulo !== "string" || data.titulo.trim().length < 2) {
+        if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 5) {
             await db.close();
             return new Response(
-                JSON.stringify({ ok: false, error: "Título es requerido y debe tener al menos 2 caracteres." }),
+                JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 5 caracteres." }),
                 { status: 400 }
             );
         }
-        if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 2) {
+        if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 5) {
             await db.close();
             return new Response(
-                JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 2 caracteres." }),
-                { status: 400 }
-            );
-        }
-        if (!data.recomendacion || typeof data.recomendacion !== "string" || data.recomendacion.trim().length < 2) {
-            await db.close();
-            return new Response(
-                JSON.stringify({ ok: false, error: "Recomendación es requerida y debe tener al menos 2 caracteres." }),
-                { status: 400 }
-            );
-        }
-        if (!data.emergencia || typeof data.emergencia !== "string" || data.emergencia.trim().length < 1) {
-            await db.close();
-            return new Response(
-                JSON.stringify({ ok: false, error: "Emergencia es requerida." }),
-                { status: 400 }
-            );
-        }
-        if (data.categoria && typeof data.categoria !== "string") {
-            await db.close();
-            return new Response(
-                JSON.stringify({ ok: false, error: "Categoría debe ser texto." }),
-                { status: 400 }
-            );
-        }
-        if (data.frecuencia && typeof data.frecuencia !== "string") {
-            await db.close();
-            return new Response(
-                JSON.stringify({ ok: false, error: "Frecuencia debe ser texto." }),
+                JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 5 caracteres." }),
                 { status: 400 }
             );
         }
@@ -122,29 +77,25 @@ export const PUT: APIRoute = async ({ request }) => {
         }
 
         const duplicado = await db.get(
-            "SELECT id FROM sintomas WHERE titulo = ? AND id != ?",
-            data.titulo.trim(),
+            "SELECT id FROM sintomas WHERE nombre = ? AND id != ?",
+            data.nombre.trim(),
             id
         );
         if (duplicado) {
             await db.close();
             return new Response(
-                JSON.stringify({ ok: false, error: "Ya existe un síntoma con ese título." }),
+                JSON.stringify({ ok: false, error: "Ya existe un síntoma con ese nombre." }),
                 { status: 409 }
             );
         }
 
         await db.run(
             `UPDATE sintomas
-             SET titulo = ?, descripcion = ?, recomendacion = ?, emergencia = ?, categoria = ?, frecuencia = ?
+             SET nombre = ?, descripcion = ?
              WHERE id = ?`,
             [
-                data.titulo.trim(),
+                data.nombre.trim(),
                 data.descripcion.trim(),
-                data.recomendacion.trim(),
-                data.emergencia.trim(),
-                data.categoria ? data.categoria.trim() : null,
-                data.frecuencia ? data.frecuencia.trim() : null,
                 id
             ]
         );
