@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(msg);
         if (res.ok) {
             form.reset();
-            
+            window.location.reload();
         }
     });
 });
