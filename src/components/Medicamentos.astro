@@ -1,12 +1,5 @@
 ---
 import { Pill } from '@lucide/astro';
-
-const { 
-    sintPage = 1,
-    medicamentos = [], medPage = 1, medTotal = 0,
-    relPage = 1,
-    PAGE_SIZE = 0
-    } = Astro.props;
 ---
 
 
@@ -89,7 +82,7 @@ const {
                 <Pill class="w-6 h-6 inline mr-1 text-blue-800" />
                 Medicamentos Registrados</h2>
             <p class="text-gray-600 mt-1">
-                Total de medicamentos: {medTotal} medicamentos
+                <span id="total-medicamentos"></span>
             </p>
             <!-- Buscador de medicamentos -->
             <div class="mt-4">
@@ -111,32 +104,13 @@ const {
                             </tr>
                         </thead>
                         <tbody id="medicamentos-list">
-                            {medicamentos.length === 0 ? (
-                                <tr>
-                                    <td colspan="4" class="text-center py-6 text-gray-400">No hay medicamentos registrados.</td>
-                                </tr>
-                            ) : (
-                                medicamentos.map((m: any) => (
-                                    <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition">
-                                        <td class="px-6 py-2 hidden text-sm" data-field="medicamento_id">{m.id}</td>
-                                        <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_nombre">{m.nombre}</td>
-                                        <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_activo">{m.activo}</td>
-                                        <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_efectos">{m.efectos}</td>
-                                        <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_categorias">{m.categorias}</td>
-                                    </tr>
-                                ))
-                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Paginación medicamentos -->
-            <div class="flex justify-center items-center">
-                <a href={`?medPage=${medPage - 1 > 0 ? medPage - 1 : 1}&sintPage=${sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${medPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={medPage === 1 ? "-1" : "0"} aria-disabled={medPage === 1}>Anterior</a>
-                <span class="px-2 text-sm">Página {medPage} de {Math.max(1, Math.ceil(medTotal / PAGE_SIZE))}</span>
-                <a href={`?medPage=${medPage + 1 <= Math.ceil(medTotal / PAGE_SIZE) ? medPage + 1 : medPage}&sintPage=${sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={medPage === Math.ceil(medTotal / PAGE_SIZE) || Math.ceil(medTotal / PAGE_SIZE) === 1}>Siguiente</a>
-            </div>
+            <div id="med-paginacion" class="flex justify-center items-center mt-4"></div>
         </div>
     </div>
 </div>

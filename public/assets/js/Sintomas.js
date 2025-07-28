@@ -6,6 +6,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const sintomasTable = document.getElementById("tabla-sintomas");
     let editId = null;
 
+    async function cargarSintomas(pagina = 1) {
+        const res = await fetch(`/api/v1/sintomas?pagina=${pagina}`);
+        const { sintomas, sintTotal, PAGE_SIZE } = await res.json();
+        const tbody = document.getElementById("sintomas-list");
+        tbody.innerHTML = sintomas.length === 0
+            ? `<tr><td colspan="2" class="text-center py-6 text-gray-400">No hay síntomas registrados.</td></tr>`
+            : sintomas.map(s => `
+                <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition">
+                    <td class="px-6 py-2 hidden text-sm" data-field="sintoma_id">${s.id}</td>
+                    <td class="px-6 py-2 text-sm" data-field="sintoma_nombre">${s.nombre}</td>
+                    <td class="px-6 py-2 text-sm" data-field="sintoma_descripcion">${s.descripcion}</td>
+                </tr>
+            `).join("");
+
+        // Mostrar el total de sintomas
+        document.getElementById("total-sintomas").textContent = `Total de síntomas: ${sintTotal} síntomas`;
+        // Actualiza paginación
+        const totalPages = Math.max(1, Math.ceil(sintTotal / PAGE_SIZE));
+        document.getElementById("sint-paginacion").innerHTML = `
+            <a href="#" class="px-3 py-1 rounded ${pagina === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" data-page="${pagina - 1}" ${pagina === 1 ? 'tabindex="-1" aria-disabled="true"' : ""}>Anterior</a>
+            <span class="px-2 text-sm">Página ${pagina} de ${totalPages}</span>
+            <a href="#" class="px-3 py-1 rounded ${pagina === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" data-page="${pagina + 1}" ${pagina === totalPages ? 'tabindex="-1" aria-disabled="true"' : ""}>Siguiente</a>
+        `;
+        // Listeners
+        document.querySelectorAll("#sint-paginacion a[data-page]").forEach(a => {
+            a.onclick = (e) => {
+                e.preventDefault();
+                const page = Number(a.getAttribute("data-page"));
+                if (page > 0 && page <= totalPages) cargarSintomas(page);
+            };
+        });
+    }
+
+    // Llama a cargarSintomas(1) al cargar la página
+    cargarSintomas(1);
+
     // Cargar datos al hacer click en la tabla
     sintomasTable?.addEventListener("click", (e) => {
         const tr = e.target.closest("tr");
@@ -39,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
             form.reset();
             editId = null;
-            window.location.reload();
+            cargarSintomas(1);
         }
     });
 
@@ -64,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
             form.reset();
             editId = null;
-            window.location.reload();
+            cargarSintomas(1);
         }
     });
 
@@ -83,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok) {
                 form.reset();
                 editId = null;
-                window.location.reload();
+                cargarSintomas(1);
             }
         }
     });

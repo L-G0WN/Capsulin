@@ -47,6 +47,23 @@ export const POST: APIRoute = async ({ request }) => {
     }
 };
 
+export const GET: APIRoute = async ({ url }) => {
+    const db = await getDb();
+    const pagina = Number(url.searchParams.get("pagina") || 1);
+    const PAGE_SIZE = 5;
+    const medTotal = (await db.all("SELECT COUNT(*) as c FROM medicamentos"))[0].c;
+    const medOffset = (pagina - 1) * PAGE_SIZE;
+    const medicamentos = await db.all(
+        `SELECT id, nombre, activo, efectos, categorias FROM medicamentos ORDER BY nombre ASC LIMIT ? OFFSET ?`,
+        PAGE_SIZE,
+        medOffset,
+    );
+    await db.close();
+    return new Response(JSON.stringify({ medicamentos, medTotal, PAGE_SIZE }), {
+        headers: { "Content-Type": "application/json" }
+    });
+};
+
 export const PUT: APIRoute = async ({ request }) => {
     const db = await getDb();
     try {

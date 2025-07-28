@@ -39,6 +39,23 @@ export const POST: APIRoute = async ({ request }) => {
     }
 };
 
+export const GET: APIRoute = async ({ url }) => {
+    const db = await getDb();
+    const pagina = Number(url.searchParams.get("pagina") || 1);
+    const PAGE_SIZE = 5;
+    const sintTotal = (await db.all("SELECT COUNT(*) as c FROM sintomas"))[0].c;
+    const sintOffset = (pagina - 1) * PAGE_SIZE;
+    const sintomas = await db.all(
+        `SELECT id, nombre, descripcion FROM sintomas ORDER BY nombre ASC LIMIT ? OFFSET ?`,
+        PAGE_SIZE,
+        sintOffset,
+    );
+    await db.close();
+    return new Response(JSON.stringify({ sintomas, sintTotal, PAGE_SIZE }), {
+        headers: { "Content-Type": "application/json" }
+    });
+};
+
 export const PUT: APIRoute = async ({ request }) => {
     const db = await getDb();
     try {

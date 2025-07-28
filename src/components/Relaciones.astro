@@ -1,12 +1,5 @@
 ---
 import { Link } from '@lucide/astro';
-
-const { 
-    sintPage = 1,
-    medPage = 1,
-    relaciones = [], relPage = 1, relTotal = 0,
-    PAGE_SIZE = 0
-    } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -86,7 +79,7 @@ const {
                 <Link class="w-6 h-6 inline mr-1 text-blue-800" />
                 Relaciones Registradas</h2>
             <p class="text-gray-600 mt-1">
-                Total de relaciones: {relTotal} relaciones
+                <span id="total-relaciones"></span>
             </p>
             <!-- Buscador de relaciones -->
             <div class="mt-4">
@@ -107,42 +100,14 @@ const {
                             </tr>
                         </thead>
                         <tbody id="relaciones-list">
-                            {relaciones.length === 0 ? (
-                            <tr>
-                                <td colspan="4" class="text-center py-6 text-gray-400">No hay relaciones registradas.</td>
-                            </tr>
-                        ) : (
-                            relaciones.map((r: any) => (
-                                <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition">
-                                    <td class="px-6 py-2 text-sm" data-field="relacion_sintoma">{r.sintoma}</td>
-                                    <td class="px-6 py-2 text-sm" data-field="relacion_medicamento">{r.medicamento}</td>
-                                    <td class="px-6 py-2 text-sm" data-field="relacion_intensidad">{r.intensidad}</td>                                
-                                    <td class="px-6 py-2 text-sm">
-                                    <button
-                                        type="button"
-                                        class="text-red-600 hover:text-red-800"
-                                        aria-label="Eliminar relación"
-                                        onclick={`if (confirm('¿Estás seguro de eliminar esta relación?')) { fetch('/api/v1/relaciones?relacion_sintoma=${r.sintoma_id}&relacion_medicamento=${r.medicamento_id}&relacion_intensidad=${encodeURIComponent(Array.isArray(r.intensidad) ? r.intensidad.join(", ") : r.intensidad)}', { method: 'DELETE' }).then(() => location.reload()); }`}
-                                    >
-                                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
-                                    </td>                                
-                                </tr>
-                            ))
-                        )}
+
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Paginación relaciones -->
-            <div class="flex justify-center items-center">
-                <a href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage - 1 > 0 ? relPage - 1 : 1}`} class={`px-3 py-1 rounded ${relPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={relPage === 1 ? "-1" : "0"} aria-disabled={relPage === 1}>Anterior</a>
-                <span class="px-2 text-sm">Página {relPage} de {Math.max(1, Math.ceil(relTotal / PAGE_SIZE))}</span>
-                <a href={`?medPage=${medPage}&sintPage=${sintPage}&relPage=${relPage + 1 <= Math.ceil(relTotal / PAGE_SIZE) ? relPage + 1 : relPage}`} class={`px-3 py-1 rounded ${relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={relPage === Math.ceil(relTotal / PAGE_SIZE) || Math.ceil(relTotal / PAGE_SIZE) === 1}>Siguiente</a>
-            </div>
+            <div id="rel-paginacion" class="flex justify-center items-center mt-4"></div>
         </div>
     </div>
 </div>

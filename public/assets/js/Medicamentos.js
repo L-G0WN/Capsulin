@@ -6,6 +6,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const medicamentosTable = document.getElementById("tabla-medicamentos");
     let editId = null;
 
+    async function cargarMedicamentos(pagina = 1) {
+        const res = await fetch(`/api/v1/medicamentos?pagina=${pagina}`);
+        const { medicamentos, medTotal, PAGE_SIZE } = await res.json();
+        const tbody = document.getElementById("medicamentos-list");
+        tbody.innerHTML = medicamentos.length === 0
+            ? `<tr><td colspan="4" class="text-center py-6 text-gray-400">No hay medicamentos registrados.</td></tr>`
+            : medicamentos.map(m => `
+                <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition">
+                    <td class="px-6 py-2 hidden text-sm" data-field="medicamento_id">${m.id}</td>
+                    <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_nombre">${m.nombre}</td>
+                    <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_activo">${m.activo}</td>
+                    <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_efectos">${m.efectos}</td>
+                    <td class="px-6 py-2 text-sm max-w-xs break-words" data-field="medicamento_categorias">${m.categorias}</td>
+                </tr>
+            `).join("");
+
+        // Mostrar el total de medicamentos
+        document.getElementById("total-medicamentos").textContent = `Total de medicamentos: ${medTotal} medicamentos`;
+        // Actualiza paginación
+        const totalPages = Math.max(1, Math.ceil(medTotal / PAGE_SIZE));
+        document.getElementById("med-paginacion").innerHTML = `
+            <a href="#" class="px-3 py-1 rounded ${pagina === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" data-page="${pagina - 1}" ${pagina === 1 ? 'tabindex="-1" aria-disabled="true"' : ""}>Anterior</a>
+            <span class="px-2 text-sm">Página ${pagina} de ${totalPages}</span>
+            <a href="#" class="px-3 py-1 rounded ${pagina === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" data-page="${pagina + 1}" ${pagina === totalPages ? 'tabindex="-1" aria-disabled="true"' : ""}>Siguiente</a>
+        `;
+        document.querySelectorAll("#med-paginacion a[data-page]").forEach(a => {
+            a.onclick = (e) => {
+                e.preventDefault();
+                const page = Number(a.getAttribute("data-page"));
+                if (page > 0 && page <= totalPages) cargarMedicamentos(page);
+            };
+        });
+    }
+
+    cargarMedicamentos(1);
+
     // Cargar datos al hacer click en la tabla
     medicamentosTable?.addEventListener("click", (e) => {
         const tr = e.target.closest("tr");
@@ -39,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
             form.reset();
             editId = null;
-            window.location.reload();
+            cargarMedicamentos(1);
         }
     });
 
@@ -64,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
             form.reset();
             editId = null;
-            window.location.reload();
+            cargarMedicamentos(1);
         }
     });
 
@@ -82,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok) {
                 form.reset();
                 editId = null;
-                window.location.reload();
+                cargarMedicamentos(1);
             }
         }
     });

@@ -52,6 +52,57 @@ export const POST: APIRoute = async ({ request }) => {
     }
 };
 
+export const GET: APIRoute = async ({ url }) => {
+    const db = await getDb();
+    const pagina = Number(url.searchParams.get("pagina") || 1);
+    const PAGE_SIZE = 5;
+    const search = (url.searchParams.get("search") || "").toLowerCase().trim();
+
+    // Construir filtro de búsqueda
+    let where = "";
+    let params: any[] = [];
+    if (search) {
+        where = `
+            WHERE 
+                LOWER(s.nombre) LIKE ? OR
+                LOWER(m.nombre) LIKE ? OR
+                LOWER(sm.intensidad) LIKE ?
+        `;
+        params = [`%${search}%`, `%${search}%`, `%${search}%`];
+    }
+
+    // Total de relaciones (para paginación)
+    const totalQuery = await db.get(
+        `SELECT COUNT(*) as c
+         FROM sintoma_medicamento sm
+         JOIN sintomas s ON sm.sintoma_id = s.id
+         JOIN medicamentos m ON sm.medicamento_id = m.id
+         ${where}`,
+        ...params
+    );
+    const relTotal = totalQuery?.c || 0;
+
+    // Obtener relaciones paginadas
+    const offset = (pagina - 1) * PAGE_SIZE;
+    const relaciones = await db.all(
+        `SELECT sm.sintoma_id, s.nombre as sintoma, sm.medicamento_id, m.nombre as medicamento, sm.intensidad
+         FROM sintoma_medicamento sm
+         JOIN sintomas s ON sm.sintoma_id = s.id
+         JOIN medicamentos m ON sm.medicamento_id = m.id
+         ${where}
+         ORDER BY s.nombre ASC, m.nombre ASC
+         LIMIT ? OFFSET ?`,
+        ...params,
+        PAGE_SIZE,
+        offset
+    );
+
+    await db.close();
+    return new Response(JSON.stringify({ relaciones, relTotal, PAGE_SIZE }), {
+        headers: { "Content-Type": "application/json" }
+    });
+};
+
 export const DELETE: APIRoute = async ({ request }) => {
     const db = await getDb();
     try {

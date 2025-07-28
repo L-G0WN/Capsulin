@@ -6,22 +6,6 @@ import { House, Stethoscope, Pill, Link } from "@lucide/astro";
 import Sintomas from "@/components/Sintomas.astro";
 import Medicamentos from "@/components/Medicamentos.astro";
 import Relaciones from "@/components/Relaciones.astro";
-
-import { getPaginationData, PAGE_SIZE } from "@/utils/pagination.ts";
-
-const url = new URL(Astro.request.url);
-
-const {
-    medPage,
-    sintPage,
-    relPage,
-    medTotal,
-    sintTotal,
-    relTotal,
-    medicamentos,
-    sintomas,
-    relaciones
-} = await getPaginationData(url);
 ---
 
 <Layout title="Base de Datos" descripcion="Administra síntomas, medicamentos y relaciones">
@@ -77,32 +61,17 @@ const {
 
         <!-- Síntomas Tab -->
         <div id="sintomas-content" class="tab-content active">
-            <Sintomas 
-            sintomas={sintomas} sintPage={sintPage} sintTotal={sintTotal}
-            medPage={medPage}
-            relPage={relPage}
-            PAGE_SIZE={PAGE_SIZE}
-            />
+            <Sintomas />
         </div>
 
         <!-- Medicamentos Tab -->
         <div id="medicamentos-content" class="tab-content">
-            <Medicamentos 
-            intPage={sintPage}
-            medicamentos={medicamentos} medPage={medPage} medTotal={medTotal}
-            relPage={relPage}
-            PAGE_SIZE={PAGE_SIZE}
-            />
+            <Medicamentos />
         </div>
 
         <!-- Relaciones Tab -->
         <div id="relaciones-content" class="tab-content">
-            <Relaciones
-            sintPage={sintPage}
-            medPage={medPage}
-            relaciones={relaciones} relPage={relPage} relTotal={relTotal}
-            PAGE_SIZE={PAGE_SIZE}
-            />
+            <Relaciones />
         </div>
     </div>
 

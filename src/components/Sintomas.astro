@@ -1,12 +1,5 @@
 ---
 import { Stethoscope } from '@lucide/astro';
-
-const { 
-    sintomas = [], sintPage = 1, sintTotal = 0,
-    medPage = 1,
-    relPage = 1,
-    PAGE_SIZE = 0
-    } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -76,7 +69,7 @@ const {
                 <Stethoscope class="w-6 h-6 inline mr-1 text-blue-800" />
                 Síntomas Registrados</h2>
             <p class="text-gray-600 mt-1">
-                Total de síntomas: {sintTotal} síntomas
+                <span id="total-sintomas"></span>
             </p>
             <!-- Buscador de síntomas -->
             <div class="mt-4">
@@ -96,30 +89,13 @@ const {
                             </tr>
                         </thead>
                         <tbody id="sintomas-list">
-                            {sintomas.length === 0 ? (
-                            <tr>
-                                <td colspan="2" class="text-center py-6 text-gray-400">No hay síntomas registrados.</td>
-                            </tr>
-                        ) : (
-                            sintomas.map((s: any) => (
-                                <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition">
-                                    <td class="px-6 py-2 hidden text-sm" data-field="sintoma_id">{s.id}</td>
-                                    <td class="px-6 py-2 text-sm" data-field="sintoma_nombre">{s.nombre}</td>
-                                    <td class="px-6 py-2 text-sm" data-field="sintoma_descripcion">{s.descripcion}</td>
-                                </tr>
-                            ))
-                        )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Paginación síntomas -->
-            <div class="flex justify-center items-center">
-                <a href={`?medPage=${medPage}&sintPage=${sintPage - 1 > 0 ? sintPage - 1 : 1}&relPage=${relPage}`} class={`px-3 py-1 rounded ${sintPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={sintPage === 1 ? "-1" : "0"} aria-disabled={sintPage === 1}>Anterior</a>
-                <span class="px-2 text-sm">Página {sintPage} de {Math.max(1, Math.ceil(sintTotal / PAGE_SIZE))}</span>
-                <a href={`?medPage=${medPage}&sintPage=${sintPage + 1 <= Math.ceil(sintTotal / PAGE_SIZE) ? sintPage + 1 : sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1}>Siguiente</a>
-            </div>
+            <div id="sint-paginacion" class="flex justify-center items-center mt-4"></div>
         </div>
     </div>
 </div>
