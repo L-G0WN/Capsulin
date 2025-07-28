@@ -6,6 +6,22 @@ import { House, Stethoscope, Pill, Link } from "@lucide/astro";
 import Sintomas from "@/components/Sintomas.astro";
 import Medicamentos from "@/components/Medicamentos.astro";
 import Relaciones from "@/components/Relaciones.astro";
+
+import { getPaginationData, PAGE_SIZE } from "@/utils/pagination.ts";
+
+const url = new URL(Astro.request.url);
+
+const {
+    medPage,
+    sintPage,
+    relPage,
+    medTotal,
+    sintTotal,
+    relTotal,
+    medicamentos,
+    sintomas,
+    relaciones
+} = await getPaginationData(url);
 ---
 
 <Layout title="Base de Datos" descripcion="Administra síntomas, medicamentos y relaciones">
@@ -40,7 +56,7 @@ import Relaciones from "@/components/Relaciones.astro";
         <!-- Navegación -->
         <div class="flex flex-row justify-center mb-8">
             <div class="bg-gray-100 rounded-lg p-1 border border-gray-300 shadow-2xs flex flex-row gap-2 flex-wrap sm:flex-nowrap w-full max-w-2xl">
-                <a href="/" class="px-4 sm:px-8 py-1 rounded-md font-medium text-sm transition-colors active flex items-center flex-1 justify-center">
+                <a href="/" class="tab-button px-4 sm:px-8 py-1 rounded-md font-medium text-sm transition-colors flex items-center flex-1 justify-center">
                     <House class="w-4 h-4 inline mr-2" />
                     Inicio
                 </a>
@@ -61,19 +77,35 @@ import Relaciones from "@/components/Relaciones.astro";
 
         <!-- Síntomas Tab -->
         <div id="sintomas-content" class="tab-content active">
-            <Sintomas />
+            <Sintomas 
+            sintomas={sintomas} sintPage={sintPage} sintTotal={sintTotal}
+            medPage={medPage}
+            relPage={relPage}
+            PAGE_SIZE={PAGE_SIZE}
+            />
         </div>
 
         <!-- Medicamentos Tab -->
         <div id="medicamentos-content" class="tab-content">
-            <Medicamentos />
+            <Medicamentos 
+            intPage={sintPage}
+            medicamentos={medicamentos} medPage={medPage} medTotal={medTotal}
+            relPage={relPage}
+            PAGE_SIZE={PAGE_SIZE}
+            />
         </div>
 
         <!-- Relaciones Tab -->
         <div id="relaciones-content" class="tab-content">
-            <Relaciones />
+            <Relaciones
+            sintPage={sintPage}
+            medPage={medPage}
+            relaciones={relaciones} relPage={relPage} relTotal={relTotal}
+            PAGE_SIZE={PAGE_SIZE}
+            />
         </div>
     </div>
 
     <script type="module" src="/assets/js/showTab.js"></script>
+    <script type="module" src="/assets/js/searchField.js"></script>
 </Layout>

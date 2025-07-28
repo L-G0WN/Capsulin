@@ -1,5 +1,12 @@
 ---
 import { Stethoscope } from '@lucide/astro';
+
+const { 
+    sintomas = [], sintPage = 1, sintTotal = 0,
+    medPage = 1,
+    relPage = 1,
+    PAGE_SIZE = 0
+    } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -24,16 +31,16 @@ import { Stethoscope } from '@lucide/astro';
                     <label for="sintoma-nombre" class="block text-sm font-medium text-gray-700 mb-2">
                         Nombre del Síntoma
                     </label>
-                    <input type="text" id="sintoma-nombre" placeholder="Dolor de Cabeza" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
+                    <input type="text" id="sintoma-nombre" name="sintoma_nombre" placeholder="Dolor de Cabeza" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
                 </div>
                 <div>
                     <label for="sintoma-descripcion" class="block text-sm font-medium text-gray-700 mb-2">
                         Descripción
                     </label>
-                    <textarea id="sintoma-descripcion" placeholder="Es una de las afecciones más comunes y puede tener diversas causas, desde estrés o mala postura hasta migrañas o problemas de salud más graves, por lo que es importante reconocer su tipo y saber cuándo buscar atención médica." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    <textarea id="sintoma-descripcion" name="sintoma_descripcion" placeholder="Es una de las afecciones más comunes y puede tener diversas causas, desde estrés o mala postura hasta migrañas o problemas de salud más graves, por lo que es importante reconocer su tipo y saber cuándo buscar atención médica." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
                 </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-1 bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-950 transition-colors flex items-center justify-center gap-2">
+                <div class="flex flex-col gap-2 sm:flex-row">
+                    <button id="btn-agregar-sintoma" type="submit" class="flex-1 bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-950 transition-colors flex items-center justify-center gap-2">
                         <span class="inline-block w-4 h-4 text-white">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round"  stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
@@ -41,7 +48,7 @@ import { Stethoscope } from '@lucide/astro';
                         </span>
                         Agregar
                     </button>
-                    <button type="button" class="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                    <button id="btn-editar-sintoma" type="button" class="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
                         <span class="inline-block w-4 h-4 text-white">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6 6M3 21h18"></path>
@@ -49,7 +56,7 @@ import { Stethoscope } from '@lucide/astro';
                         </span>
                         Editar
                     </button>
-                    <button type="button" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
+                    <button id="btn-eliminar-sintoma" type="button" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
                         <span class="inline-block w-4 h-4 text-white">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
@@ -69,7 +76,7 @@ import { Stethoscope } from '@lucide/astro';
                 <Stethoscope class="w-6 h-6 inline mr-1 text-blue-800" />
                 Síntomas Registrados</h2>
             <p class="text-gray-600 mt-1">
-                Total de síntomas: <span id="sintomas-count">0</span> síntomas
+                Total de síntomas: {sintTotal} síntomas
             </p>
             <!-- Buscador de síntomas -->
             <div class="mt-4">
@@ -79,25 +86,42 @@ import { Stethoscope } from '@lucide/astro';
         <div class="p-6">
             <!-- Tabla de síntomas -->
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200" id="tabla-sintomas">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sintomas-list">
-                        <tr>
-                            {
-                                /* Aquí se insertarán los síntomas dinámicamente */
-                            }
-                            <td colspan="2" class="text-gray-500 text-center py-4">
-                                No hay síntomas registrados
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="max-h-72 overflow-y-auto">
+                    <table class="min-w-full divide-y divide-gray-200" id="tabla-sintomas">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden">ID</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sintomas-list">
+                            {sintomas.length === 0 ? (
+                            <tr>
+                                <td colspan="2" class="text-center py-6 text-gray-400">No hay síntomas registrados.</td>
+                            </tr>
+                        ) : (
+                            sintomas.map((s: any) => (
+                                <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition">
+                                    <td class="px-6 py-2 hidden text-sm" data-field="sintoma_id">{s.id}</td>
+                                    <td class="px-6 py-2 text-sm" data-field="sintoma_nombre">{s.nombre}</td>
+                                    <td class="px-6 py-2 text-sm" data-field="sintoma_descripcion">{s.descripcion}</td>
+                                </tr>
+                            ))
+                        )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Paginación síntomas -->
+            <div class="flex justify-center items-center">
+                <a href={`?medPage=${medPage}&sintPage=${sintPage - 1 > 0 ? sintPage - 1 : 1}&relPage=${relPage}`} class={`px-3 py-1 rounded ${sintPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={sintPage === 1 ? "-1" : "0"} aria-disabled={sintPage === 1}>Anterior</a>
+                <span class="px-2 text-sm">Página {sintPage} de {Math.max(1, Math.ceil(sintTotal / PAGE_SIZE))}</span>
+                <a href={`?medPage=${medPage}&sintPage=${sintPage + 1 <= Math.ceil(sintTotal / PAGE_SIZE) ? sintPage + 1 : sintPage}&relPage=${relPage}`} class={`px-3 py-1 rounded ${sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`} tabindex={sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1 ? "-1" : "0"} aria-disabled={sintPage === Math.ceil(sintTotal / PAGE_SIZE) || Math.ceil(sintTotal / PAGE_SIZE) === 1}>Siguiente</a>
             </div>
         </div>
     </div>
 </div>
+
+<script type="module" src="/assets/js/Sintomas.js"></script>

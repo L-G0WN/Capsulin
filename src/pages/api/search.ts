@@ -1,153 +1,98 @@
 import { getDb } from "@/lib/db.ts";
 import type { APIRoute } from "astro";
-import type { Medicamento, MedicamentoRelacion, Sintoma } from "@/types.ts";
+
+// Función para normalizar (quitar acentos y pasar a minúsculas)
+function normalizar(str: string) {
+    return str
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+}
 
 export const GET: APIRoute = async ({ url }) => {
-    const query = url.searchParams.get('query')?.toLowerCase() || '';
+    let query = url.searchParams.get('query') || '';
     const db = await getDb();
 
-    // Obtener presentaciones y dosis directamente de la base de datos
-    const presentacionesRaw = await db.all('SELECT id, nombre FROM presentaciones');
-    const dosisRaw = await db.all('SELECT id, cantidad FROM dosis');
-
-    const presentacionesLower = presentacionesRaw.map(p => p.nombre.toLowerCase());
-    const queryWords = query.split(/\s+/).filter(Boolean);
-
-    // Detecta presentaciones mencionadas en el query
-    const presentacionesEncontradas = presentacionesLower.filter(p => queryWords.includes(p));
-
-    // Detecta dosis mencionadas en el query
-    const dosisEncontradas = dosisRaw
-        .filter(d => query.includes(d.cantidad.toLowerCase()))
-        .map(d => d.cantidad);
-
     try {
-        // Buscar síntomas y medicamentos mencionados en el query
-        const sintomasRaw = await db.all('SELECT id, titulo FROM sintomas');
-        const medicamentosRaw = await db.all('SELECT id, nombre, presentacion_id FROM medicamentos');
+        // Detectar intensidades en el query (puede ser una o varias)
+        let intensidades: string[] = [];
+        const queryNorm = normalizar(query);
+        if (queryNorm.includes("muy fuerte")) intensidades.push("Muy Fuerte");
+        if (queryNorm.includes("media")) intensidades.push("Media");
+        if (queryNorm.includes("normal")) intensidades.push("Normal");
 
-        // Buscar síntomas por coincidencia de frase completa en el query
-        const sintomasNames: string[] = [];
-        sintomasRaw.forEach((sintoma: { id: number, titulo: string }) => {
-            if (query.includes(sintoma.titulo.toLowerCase())) {
-                sintomasNames.push(sintoma.titulo);
-            }
-        });
+        // Extraer palabras clave del query (ignorando palabras muy cortas)
+        const palabrasClave = queryNorm
+            .split(/\s+/)
+            .map(w => w.trim())
+            .filter(w => w.length > 2);
 
-        // Buscar medicamentos por coincidencia de frase completa en el query
-        const medicationNames: string[] = [];
-        medicamentosRaw.forEach((medicamento: { id: number, nombre: string }) => {
-            if (query.includes(medicamento.nombre.toLowerCase())) {
-                medicationNames.push(medicamento.nombre);
-            }
-        });
+        // Obtener todos los síntomas y medicamentos (puedes limitar si tienes muchos)
+        let sintomas: any[] = await db.all(
+            `SELECT id, nombre, descripcion FROM sintomas`
+        );
+        let medicamentos: any[] = await db.all(
+            `SELECT id, nombre, activo, efectos, categorias FROM medicamentos`
+        );
 
-        // Buscar medicamentos por presentación usando la tabla presentaciones
-        let medicamentosPorPresentacion: Medicamento[] = [];
-        if (presentacionesEncontradas.length > 0) {
-            const presentacionesIds = presentacionesRaw
-                .filter(p => presentacionesEncontradas.includes(p.nombre.toLowerCase()))
-                .map(p => p.id);
-            if (presentacionesIds.length > 0) {
-                medicamentosPorPresentacion = await db.all(
-                    `SELECT id, nombre, efectos, contraindicaciones, presentacion_id
-                     FROM medicamentos WHERE presentacion_id IN (${presentacionesIds.map(() => '?').join(',')})`,
-                    ...presentacionesIds
-                );
-            }
-        }
-
-        // Buscar medicamentos por dosis si hay dosis encontradas
-        let medicamentosPorDosis: Medicamento[] = [];
-        if (dosisEncontradas.length > 0) {
-            medicamentosPorDosis = await db.all(
-                `SELECT m.id, m.nombre, m.efectos, m.contraindicaciones, m.presentacion_id
-                 FROM medicamentos m
-                 JOIN sintoma_medicamento sm ON sm.medicamento_id = m.id
-                 JOIN dosis d ON sm.dosis_id = d.id
-                 WHERE d.cantidad IN (${dosisEncontradas.map(() => '?').join(',')})`,
-                ...dosisEncontradas
+        // Filtrar coincidencia insensible a acentos
+        if (palabrasClave.length > 0) {
+            sintomas = sintomas.filter(s =>
+                palabrasClave.some(palabra =>
+                    normalizar(s.nombre).includes(palabra)
+                )
+            );
+            medicamentos = medicamentos.filter(m =>
+                palabrasClave.some(palabra =>
+                    normalizar(m.nombre).includes(palabra) ||
+                    (m.activo && normalizar(m.activo).includes(palabra))
+                )
             );
         }
 
-        // Detectar intensidad en el query
-        let intensidad = "";
-        if (query.includes("muy fuerte")) intensidad = "Muy Fuerte";
-        else if (query.includes("medio")) intensidad = "Medio";
-        else if (query.includes("normal")) intensidad = "Normal";
-
-        // Consulta los síntomas cuyos títulos coinciden con los nombres encontrados
-        const sintomas: Sintoma[] = sintomasNames.length > 0
-            ? await db.all(
-                `SELECT id, titulo as sintoma, descripcion, recomendacion, emergencia, categoria, frecuencia
-                 FROM sintomas WHERE titulo IN (${sintomasNames.map(() => '?').join(',')})`,
-                ...sintomasNames
-            )
-            : [];
-
-        // Consulta los medicamentos cuyos nombres coinciden con los nombres encontrados
-        const medicamentosPorNombre: Medicamento[] = medicationNames.length > 0
-            ? await db.all(
-                `SELECT id, nombre, efectos, contraindicaciones, presentacion_id
-                 FROM medicamentos WHERE nombre IN (${medicationNames.map(() => '?').join(',')})`,
-                ...medicationNames
-            )
-            : [];
-
-        // Unir medicamentos encontrados por nombre, presentación y dosis, evitando duplicados
-        const medicamentos: Medicamento[] = [
-            ...medicamentosPorNombre,
-            ...medicamentosPorPresentacion.filter(
-                m => !medicamentosPorNombre.some(mm => mm.id === m.id)
-            ),
-            ...medicamentosPorDosis.filter(
-                m => !medicamentosPorNombre.some(mm => mm.id === m.id) &&
-                     !medicamentosPorPresentacion.some(mp => mp.id === m.id)
-            )
-        ];
-
         // Relacionar medicamentos con síntomas y filtrar por intensidad si corresponde
         for (const sintoma of sintomas) {
-            let rels: MedicamentoRelacion[] = [];
-            if (intensidad) {
+            let rels: any[] = [];
+            if (intensidades.length > 0) {
+                const placeholders = intensidades.map(() => `sm.intensidad LIKE ?`).join(" OR ");
+                const params = intensidades.map(i => `%${i}%`);
                 rels = await db.all(`
-                    SELECT m.id, m.nombre, d.cantidad as dosis, sm.duracion, sm.intensidad, m.efectos, m.contraindicaciones, m.presentacion_id
+                    SELECT m.id, m.nombre, m.activo, m.efectos, m.categorias, sm.intensidad
                     FROM sintoma_medicamento sm
                     JOIN medicamentos m ON sm.medicamento_id = m.id
-                    JOIN dosis d ON sm.dosis_id = d.id
-                    WHERE sm.sintoma_id = ? AND sm.intensidad = ?
-                    ORDER BY RANDOM()
-                    LIMIT 2
-                `, [sintoma.id, intensidad]);
+                    WHERE sm.sintoma_id = ? AND (${placeholders})
+                `, [sintoma.id, ...params]);
                 if (!rels || rels.length === 0) {
-                    sintoma.medicamentos = [];
+                    const normalRels = await db.all(`
+                        SELECT m.id, m.nombre, m.activo, m.efectos, m.categorias, sm.intensidad
+                        FROM sintoma_medicamento sm
+                        JOIN medicamentos m ON sm.medicamento_id = m.id
+                        WHERE sm.sintoma_id = ? AND sm.intensidad LIKE ?
+                    `, [sintoma.id, '%Normal%']);
+                    sintoma.medicamentos = normalRels ?? [];
                     sintoma.sinMedicamentosPorIntensidad = true;
                     continue;
                 }
             } else {
                 rels = await db.all(`
-                    SELECT m.id, m.nombre, d.cantidad as dosis, sm.duracion, sm.intensidad, m.efectos, m.contraindicaciones, m.presentacion_id
+                    SELECT m.id, m.nombre, m.activo, m.efectos, m.categorias, sm.intensidad
                     FROM sintoma_medicamento sm
                     JOIN medicamentos m ON sm.medicamento_id = m.id
-                    JOIN dosis d ON sm.dosis_id = d.id
                     WHERE sm.sintoma_id = ?
-                    ORDER BY RANDOM()
-                    LIMIT 2
                 `, [sintoma.id]);
             }
             sintoma.medicamentos = rels ?? [];
         }
 
-        // Para medicamentos directos, mostrar los síntomas que trata y las dosis/intensidad
+        // Para medicamentos directos, mostrar los síntomas que trata y las intensidades
         for (const medicamento of medicamentos) {
             const sintomasRelacionados = await db.all(`
-                SELECT s.titulo, d.cantidad as dosis, sm.duracion, sm.intensidad
+                SELECT s.nombre, sm.intensidad
                 FROM sintoma_medicamento sm
                 JOIN sintomas s ON sm.sintoma_id = s.id
-                JOIN dosis d ON sm.dosis_id = d.id
                 WHERE sm.medicamento_id = ?
             `, [medicamento.id]);
-            medicamento.sintomas = sintomasRelacionados.map(s => `${s.titulo} (${s.dosis}, ${s.duracion}, ${s.intensidad})`);
+            medicamento.sintomas = sintomasRelacionados.map(s => `${s.nombre} (${s.intensidad})`);
         }
 
         await db.close();

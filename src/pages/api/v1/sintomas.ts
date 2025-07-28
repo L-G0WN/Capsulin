@@ -3,11 +3,12 @@ import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ request }) => {
     const data = await request.json();
-
-    if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 5) {
+    console.log(data.sintoma_nombre)
+    console.log(data.sintoma_descripcion)
+    if (!data.sintoma_nombre || typeof data.sintoma_nombre !== "string" || data.sintoma_nombre.trim().length < 5) {
         return new Response(JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 5 caracteres." }), { status: 400 });
     }
-    if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 5) {
+    if (!data.sintoma_descripcion || typeof data.sintoma_descripcion !== "string" || data.sintoma_descripcion.trim().length < 5) {
         return new Response(JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 5 caracteres." }), { status: 400 });
     }
 
@@ -15,7 +16,7 @@ export const POST: APIRoute = async ({ request }) => {
     try {
         const existe = await db.get(
             "SELECT id FROM sintomas WHERE nombre = ?",
-            data.nombre.trim()
+            data.sintoma_nombre.trim()
         );
         if (existe) {
             await db.close();
@@ -26,8 +27,8 @@ export const POST: APIRoute = async ({ request }) => {
             `INSERT INTO sintomas (nombre, descripcion)
              VALUES (?, ?)`,
             [
-                data.nombre.trim(),
-                data.descripcion.trim(),
+                data.sintoma_nombre.trim(),
+                data.sintoma_descripcion.trim(),
             ]
         );
         await db.close();
@@ -52,14 +53,14 @@ export const PUT: APIRoute = async ({ request }) => {
                 { status: 400 }
             );
         }
-        if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 5) {
+        if (!data.sintoma_nombre || typeof data.sintoma_nombre !== "string" || data.sintoma_nombre.trim().length < 5) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 5 caracteres." }),
                 { status: 400 }
             );
         }
-        if (!data.descripcion || typeof data.descripcion !== "string" || data.descripcion.trim().length < 5) {
+        if (!data.sintoma_descripcion || typeof data.sintoma_descripcion !== "string" || data.sintoma_descripcion.trim().length < 5) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Descripción es requerida y debe tener al menos 5 caracteres." }),
@@ -78,7 +79,7 @@ export const PUT: APIRoute = async ({ request }) => {
 
         const duplicado = await db.get(
             "SELECT id FROM sintomas WHERE nombre = ? AND id != ?",
-            data.nombre.trim(),
+            data.sintoma_nombre.trim(),
             id
         );
         if (duplicado) {
@@ -94,8 +95,8 @@ export const PUT: APIRoute = async ({ request }) => {
              SET nombre = ?, descripcion = ?
              WHERE id = ?`,
             [
-                data.nombre.trim(),
-                data.descripcion.trim(),
+                data.sintoma_nombre.trim(),
+                data.sintoma_descripcion.trim(),
                 id
             ]
         );

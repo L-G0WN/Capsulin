@@ -4,16 +4,16 @@ import type { APIRoute } from "astro";
 export const POST: APIRoute = async ({ request }) => {
     const data = await request.json();
 
-    if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 5) {
+    if (!data.medicamento_nombre || typeof data.medicamento_nombre !== "string" || data.medicamento_nombre.trim().length < 5) {
         return new Response(JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 5 caracteres." }), { status: 400 });
     }
-    if (!data.activo || typeof data.activo !== "string" || data.activo.trim().length < 5) {
+    if (!data.medicamento_activo || typeof data.medicamento_activo !== "string" || data.medicamento_activo.trim().length < 5) {
         return new Response(JSON.stringify({ ok: false, error: "Activo es requerido y debe tener al menos 5 caracteres." }), { status: 400 });
     }
-    if (!data.efectos || typeof data.efectos !== "string" || data.efectos.trim().length < 5) {
+    if (!data.medicamento_efectos || typeof data.medicamento_efectos !== "string" || data.medicamento_efectos.trim().length < 5) {
         return new Response(JSON.stringify({ ok: false, error: "Efectos es requerido y debe tener al menos 5 caracteres." }), { status: 400 });
     }
-    if (!data.categorias || typeof data.categorias !== "string" || data.categorias.trim().length < 5) {
+    if (!data.medicamento_categorias || typeof data.medicamento_categorias !== "string" || data.medicamento_categorias.trim().length < 5) {
         return new Response(JSON.stringify({ ok: false, error: "Categorias es requerido y debe tener al menos 5 caracteres." }), { status: 400 });
     }
 
@@ -21,8 +21,8 @@ export const POST: APIRoute = async ({ request }) => {
     try {
         const existe = await db.get(
             "SELECT id FROM medicamentos WHERE nombre = ? AND activo = ?",
-            data.nombre.trim(),
-            data.activo.trim()
+            data.medicamento_nombre.trim(),
+            data.medicamento_activo.trim()
         );
         if (existe) {
             await db.close();
@@ -33,10 +33,10 @@ export const POST: APIRoute = async ({ request }) => {
             `INSERT INTO medicamentos (nombre, activo, efectos, categorias)
              VALUES (?, ?, ?, ?)`,
             [
-                data.nombre.trim(),
-                data.activo.trim(),
-                data.efectos.trim(),
-                data.categorias.trim()
+                data.medicamento_nombre.trim(),
+                data.medicamento_activo.trim(),
+                data.medicamento_efectos.trim(),
+                data.medicamento_categorias.trim()
             ]
         );
         await db.close();
@@ -61,28 +61,28 @@ export const PUT: APIRoute = async ({ request }) => {
                 { status: 400 }
             );
         }
-        if (!data.nombre || typeof data.nombre !== "string" || data.nombre.trim().length < 5) {
+        if (!data.medicamento_nombre || typeof data.medicamento_nombre !== "string" || data.medicamento_nombre.trim().length < 5) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Nombre es requerido y debe tener al menos 5 caracteres." }),
                 { status: 400 }
             );
         }
-        if (!data.activo || typeof data.activo !== "string" || data.activo.trim().length < 5) {
+        if (!data.medicamento_activo || typeof data.medicamento_activo !== "string" || data.medicamento_activo.trim().length < 5) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Activo es requerido y debe tener al menos 5 caracteres." }),
                 { status: 400 }
             );
         }
-        if (!data.efectos || typeof data.efectos !== "string" || data.efectos.trim().length < 5) {
+        if (!data.medicamento_efectos || typeof data.medicamento_efectos !== "string" || data.medicamento_efectos.trim().length < 5) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Efectos es requerido y debe tener al menos 5 caracteres." }),
                 { status: 400 }
             );
         }
-        if (!data.categorias || typeof data.categorias !== "string" || data.categorias.trim().length < 5) {
+        if (!data.medicamento_categorias || typeof data.medicamento_categorias !== "string" || data.medicamento_categorias.trim().length < 5) {
             await db.close();
             return new Response(
                 JSON.stringify({ ok: false, error: "Categorias es requerido y debe tener al menos 5 caracteres." }),
@@ -100,8 +100,8 @@ export const PUT: APIRoute = async ({ request }) => {
         }
 
         const duplicado = await db.get("SELECT id FROM medicamentos WHERE nombre = ? AND activo = ? AND id != ?",
-            data.nombre.trim(),
-            data.activo.trim(),
+            data.medicamento_nombre.trim(),
+            data.medicamento_activo.trim(),
             id
         );
         if (duplicado) {
@@ -114,10 +114,10 @@ export const PUT: APIRoute = async ({ request }) => {
 
         await db.run(`UPDATE medicamentos SET nombre = ?, activo = ?, efectos = ?, categorias = ? WHERE id = ?`,
             [
-                data.nombre.trim(),
-                data.activo.trim(),
-                data.efectos.trim(),
-                data.categorias.trim(),
+                data.medicamento_nombre.trim(),
+                data.medicamento_activo.trim(),
+                data.medicamento_efectos.trim(),
+                data.medicamento_categorias.trim(),
                 id
             ]
         );
