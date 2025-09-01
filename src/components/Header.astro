@@ -1,0 +1,49 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center space-x-3">
+                <img src="/assets/LOGO-PRINCIPAL-CON-PROMESA.png" loading="lazy" alt="Drotaca Logo" class="w-56 h-56 object-contain">
+            </div>
+            <nav class="hidden sm:flex items-center space-x-6">
+                <a href="#inicio" class="text-gray-600 hover:text-blue-600 transition-colors duration-300 transform">Inicio</a>
+                <a href="#chat" class="text-gray-600 hover:text-blue-600 transition-colors duration-300 transform">Consultar Ahora</a>
+                <a href="/v1/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 transform">
+                    Iniciar Sesión
+                </a>
+            </nav>
+
+            <button id="mobile-menu-btn" class="sm:hidden flex items-center p-2 rounded-md focus:outline-none" aria-label="Abrir menú">
+                <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
+            <div id="mobile-menu" class="sm:hidden absolute top-16 left-0 right-0 bg-white shadow-md border-b border-gray-100 z-50 hidden">
+                <nav class="flex flex-col items-start px-4 py-4 space-y-4">
+                    <a href="#inicio" class="text-gray-600 hover:text-blue-600 transition-colors w-full">Inicio</a>
+                    <a href="#chat" class="text-gray-600 hover:text-blue-600 transition-colors w-full">Consultar Ahora</a>
+                    <a href="/v1/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full text-center">
+                        Iniciar Sesión
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn?.addEventListener('click', () => {
+            if (menu?.classList.contains('hidden')) {
+                menu?.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
+        });
+        document.addEventListener('click', (e) => {
+            if (btn.contains(e.target) && menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    </script>
+</header>
