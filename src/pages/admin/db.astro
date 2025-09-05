@@ -6,6 +6,20 @@ import { House, Stethoscope, Pill, Link } from "@lucide/astro";
 import Sintomas from "@/components/Sintomas.astro";
 import Medicamentos from "@/components/Medicamentos.astro";
 import Relaciones from "@/components/Relaciones.astro";
+
+import { requireAuth } from "@/lib/protected";
+
+const auth = await requireAuth(Astro.request);
+interface Props {
+    auth: {
+        user: {
+            first_name: string;
+            last_name: string;
+        };
+    };
+}
+
+const { first_name, last_name } = auth.user;
 ---
 
 <Layout title="Base de Datos" descripcion="Administra síntomas, medicamentos y relaciones">

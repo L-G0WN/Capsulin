@@ -1,90 +1,235 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-
 import Header from "@/components/Header.astro";
-import Hero from "@/components/Hero.astro";
-import Info from "@/components/Info.astro";
-import Sugerencias from "@/components/Sugerencias.astro";
-import Footer from "@/components/Footer.astro";
 ---
 
 <Layout title="Capsulin - Tu Asistente Médico Virtual" description="Tu asistente médico virtual especializado en medicamentos y síntomas. Obtén información confiable sobre tu salud de forma rápida y segura.">
 <Header />
-<Hero />
-<Info />
-<Sugerencias />
 
-<section id="chat" class="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Chatea con Capsulin</h2>
-            <p class="text-gray-600">Experimenta conversaciones inteligentes en tiempo real</p>
+<!-- Widget de Chat Capsulin -->
+<div id="chat-widget" class="fixed bottom-6 right-6 z-50">
+    <!-- Botón flotante del chat -->
+    <button 
+        id="chat-toggle" 
+        class="bg-blue-800 hover:bg-blue-900 text-white rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-800/30 relative"
+        aria-label="Abrir chat con Capsulin"
+    >
+        <svg id="chat-icon" class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            <path d="M13 8h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/>
+        </svg>
+        <svg id="close-icon" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+    </button>
+
+    <!-- Ventana del chat -->
+    <div id="chat-window" class="absolute bottom-20 right-0 w-80 sm:w-96 h-[28rem] sm:h-[32rem] bg-white rounded-xl shadow-2xl border border-gray-200 hidden transform transition-all duration-300 origin-bottom-right max-w-[calc(100vw-3rem)]">
+        <!-- Header del chat -->
+        <div class="bg-blue-800 text-white p-4 rounded-t-xl flex items-center space-x-3">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                <svg class="w-6 h-6 text-blue-800" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 8v2a7 7 0 01-7 7 7 7 0 01-7-7V8a1 1 0 011-1h2a1 1 0 011 1v2a3 3 0 003 3 3 3 0 003-3V8a1 1 0 011-1h2a1 1 0 011 1z"/>
+                    <circle cx="12" cy="20" r="2"/>
+                    <path d="M12 17v1"/>
+                    <path d="M8 4a2 2 0 012-2h4a2 2 0 012 2v3H8V4z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-lg">Capsulin</h3>
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <p class="text-xs text-blue-100">Asistente Médico - Drotafarma</p>
+                </div>
+            </div>
+            <button id="minimize-chat" class="text-blue-100 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                </svg>
+            </button>
         </div>
-        
-        <div class="bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden backdrop-blur-sm">
-            <!-- Chat Header -->
-            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                        <span class="text-white font-bold text-lg">C</span>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold text-lg">Capsulin</h3>
-                        <div class="flex items-center text-blue-100 text-sm">
-                            <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                            <span>Asistente IA • En línea</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Chat Messages -->
-            <div id="chatMessages" class="h-96 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-gray-50 to-white">
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                        <span class="text-white text-sm font-bold">C</span>
-                    </div>
-                    <div class="bg-white rounded-2xl rounded-tl-md p-4 shadow-md border border-blue-100 max-w-sm">
-                        <p class="text-gray-800 leading-relaxed">¡Hola! Soy Capsulin, tu asistente médico virtual. Estoy aquí para ayudarte con información sobre medicamentos, síntomas y dolores. ¿En qué puedo asistirte hoy?</p>
-                        <div class="text-xs text-gray-500 mt-2">Ahora</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chat Input -->
-            <div class="p-6 bg-white border-t border-gray-100">
-                <div class="flex space-x-4">
-                    <div class="flex-1 relative">
-                        <input 
-                            type="text" 
-                            id="messageInput" 
-                            placeholder="Escribe tu mensaje aquí..." 
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-800 placeholder-gray-500"
-                            onkeypress="handleKeyPress(event)"
-                        >
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hidden md:block">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <button 
-                        onclick="sendMessage()" 
-                        class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
-                    >
-                        <span>Enviar</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        <!-- Área de mensajes -->
+        <div id="chat-messages" class="flex-1 p-4 h-80 sm:h-90 overflow-y-auto overflow-x-hidden bg-gradient-to-b from-blue-50/30 to-white">
+            <!-- Mensaje de bienvenida -->
+            <div class="mb-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 relative word-wrap break-words overflow-wrap-anywhere">
+                    <div class="absolute -top-2 -left-2 w-6 h-6 bg-blue-800 rounded-full flex items-center justify-center">
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
-                    </button>
+                    </div>
+                    <p class="text-sm text-gray-700 font-medium mb-2 break-words">
+                        ¡Hola! Soy <strong class="text-blue-800">Capsulin</strong>, tu asistente médico virtual especializado.
+                    </p>
+                    <p class="text-sm text-gray-600 mb-3 break-words">
+                        Puedo ayudarte con información sobre salud, síntomas básicos, medicamentos y orientarte sobre cuándo buscar atención médica profesional.
+                    </p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-2">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5z"/>
+                                <path d="M11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+                            </svg>
+                            <p class="text-xs text-amber-700 font-medium break-words">
+                                Importante: No reemplazo la consulta médica profesional
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="mt-3 text-center">
-                    <p class="text-xs text-gray-500">Presiona Enter para enviar • Capsulin puede cometer errores</p>
+            </div>
+        </div>
+
+        <!-- Input de mensaje -->
+        <div class="p-3 sm:p-4 border-t border-gray-200 bg-white rounded-b-xl">
+            <div class="flex space-x-2 sm:space-x-3">
+                <div class="flex-1 relative min-w-0">
+                    <input 
+                        type="text" 
+                        id="message-input"
+                        placeholder="Describe tus síntomas..."
+                        class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent text-sm bg-gray-50 transition-all min-w-0"
+                    >
                 </div>
+                <button 
+                    id="send-button"
+                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-blue-800 hover:shadow-lg transform hover:scale-105 flex-shrink-0"
+                    aria-label="Enviar mensaje"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<Footer />
+<script type="module">
+    // Elementos del DOM
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatWindow = document.getElementById('chat-window');
+    const chatIcon = document.getElementById('chat-icon');
+    const closeIcon = document.getElementById('close-icon');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const minimizeChat = document.getElementById('minimize-chat');
+
+    let isOpen = false;
+
+    // Toggle del chat
+    chatToggle.addEventListener('click', () => {
+        isOpen = !isOpen;
+        
+        if (isOpen) {
+            chatWindow.classList.remove('hidden');
+            chatIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            messageInput.focus();
+        } else {
+            chatWindow.classList.add('hidden');
+            chatIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+    });
+
+    // Función para agregar mensaje
+    function addMessage(message, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `mb-4 ${isUser ? 'text-right' : ''}`;
+        
+        const messageBubble = document.createElement('div');
+        if (isUser) {
+            messageBubble.className = 'inline-block bg-blue-800 text-white p-3 rounded-xl rounded-br-md max-w-[75%] text-sm shadow-lg break-words word-wrap overflow-wrap-anywhere';
+        } else {
+            messageBubble.className = 'inline-block bg-white p-4 rounded-xl rounded-bl-md shadow-sm border border-gray-100 max-w-[85%] text-sm text-gray-700 break-words word-wrap overflow-wrap-anywhere';
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'flex items-center space-x-1 mb-2';
+            typingDiv.innerHTML = `
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-blue-800 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-blue-800 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-blue-800 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                <span class="text-xs text-gray-500 ml-2">Capsulin está escribiendo...</span>
+            `;
+            
+            messageDiv.appendChild(typingDiv);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            setTimeout(() => {
+                typingDiv.remove();
+            }, 1500);
+        }
+        
+        messageBubble.textContent = message;
+        messageDiv.appendChild(messageBubble);
+        
+        if (!isUser) {
+            setTimeout(() => {
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, isUser ? 0 : 1500);
+        } else {
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+
+    // Respuestas automáticas
+    const responses = [
+        "Gracias por tu consulta. Para síntomas persistentes o graves, te recomiendo consultar con un médico profesional lo antes posible.",
+        "Entiendo tu preocupación sobre estos síntomas. ¿Podrías contarme desde cuándo los presentas y si hay algo que los mejore o empeore?",
+        "Es importante mantener hábitos saludables: alimentación balanceada, ejercicio regular y descanso adecuado. ¿Hay algún síntoma específico que te preocupe?",
+        "⚠️ Para emergencias médicas (dolor de pecho, dificultad respiratoria severa, pérdida de conciencia), contacta inmediatamente al 911 o acude al hospital más cercano.",
+        "Te sugiero agendar una cita con tu médico de cabecera para una evaluación completa. Mientras tanto, mantén un registro de tus síntomas.",
+        "Basándome en lo que describes, es recomendable que consultes con un especialista. ¿Has tenido algún antecedente médico similar?",
+        "Recuerda siempre seguir las indicaciones de tu médico tratante. Si tienes dudas sobre medicamentos, consulta con tu farmacéutico o doctor."
+    ];
+
+    // Enviar mensaje
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message) {
+            addMessage(message, true);
+            messageInput.value = '';
+            
+            setTimeout(() => {
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse);
+            }, 1000);
+        }
+    }
+
+    // Event listeners
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // Cerrar chat al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (isOpen && !document.getElementById('chat-widget').contains(e.target)) {
+            isOpen = false;
+            chatWindow.classList.add('hidden');
+            chatIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+    });
+
+    // Minimizar chat
+    minimizeChat.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isOpen = false;
+        chatWindow.classList.add('hidden');
+        chatIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+    });
+</script>
 </Layout>

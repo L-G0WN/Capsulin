@@ -1,5 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+
+import { verifyToken } from "@/lib/auth";
+import { getCookie } from "@/lib/cookies";
+
+const token = getCookie(Astro.request, "token");
+
+if (token && verifyToken(token)) {
+  return Astro.redirect("/admin/db");
+}
 ---
 
 <Layout title="Iniciar Sesión | Capsulin">
@@ -25,16 +34,16 @@ import Layout from "@/layouts/Layout.astro";
 
       <form id="loginForm">
         <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-            Correo Electrónico
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            Nombre de Usuario
           </label>
           <input 
-            type="email" 
-            id="email" 
-            name="email"
+            type="text" 
+            id="username" 
+            name="username"
             required
             class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-            placeholder="tu@email.com"
+            placeholder="Usuario"
           >
         </div>
 
@@ -51,19 +60,13 @@ import Layout from "@/layouts/Layout.astro";
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 pr-12"
               placeholder="••••••••"
             >
-            <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer">
               <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
               </svg>
             </button>
           </div>
-        </div>
-
-        <div class="flex justify-end mb-6">
-          <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-            ¿Olvidaste tu contraseña?
-          </a>
         </div>
 
         <button 
@@ -80,9 +83,49 @@ import Layout from "@/layouts/Layout.astro";
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
         </svg>
-        Volver al inicio
+        Volver a la página principal
       </a>
     </div>
   </div>
 </section>
+
+<script type="module">
+    import { showToast } from '/assets/js/toast.js';
+
+    document.querySelector("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+        
+        if (res.ok) {
+            showToast("¡Has iniciado sesión correctamente!", "success", 1500);
+            setTimeout(() => {
+                window.location.href = "/admin/db";
+            }, 1500);
+        } else {
+            const data = await res.json();
+            showToast(data.error || "Error de acceso", "error", 3000);
+        }
+    });
+
+    const passwordInput = document.getElementById('password');
+    const eyeButton = document.querySelector('#eyeIcon').parentElement;
+
+    eyeButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeButton.querySelector('svg').classList.add('text-blue-600');
+      } else {
+        passwordInput.type = 'password';
+        eyeButton.querySelector('svg').classList.remove('text-blue-600');
+      }
+    });
+</script>
 </Layout>
